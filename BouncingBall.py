@@ -1,7 +1,7 @@
 from gamelib2 import *
 
 game = Game(700,500,"Game")
-ball = Image("beachball.png",game)
+ball = Image("images\\beachball.png",game)
 size = 100
 ball.resizeTo(size,size)
 ball.moveTo(game.width/2,game.height/2)
@@ -9,8 +9,8 @@ speed = 4
 
 ball.setSpeed(speed,speed)
 
-cross = Image("crosshair.png",game)
-bk = Image("beach.jpg",game)
+cross = Image("images\\crosshair.png",game)
+bk = Image("images\\beach.jpg",game)
 bk.moveTo(game.width/2,game.height/2)
 
 t = 31

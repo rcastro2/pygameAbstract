@@ -1,18 +1,18 @@
 from gamelib2 import *
 
 game = Game(700,500,"Game")
-asteroid = Animation("asteroid1\\asteroid1 ",41,2,game)
+asteroid = Animation("images\\asteroid1\\asteroid1 ",41,2,game)
 asteroid.setSpeed(4,4)
 
-hero = Image("hero.gif",game)
+hero = Image("images\\hero.gif",game)
 hero.moveTo(game.width/2,game.height/2)
 
-explode = Animation("explosion\\explosion ",22,1,game)
+explode = Animation("images\\explosion\\explosion ",22,1,game)
 explode.makeVisible(False)
 
-plasma = Animation("plasmaball1\\plasmaball1 ",11,3,game)
+plasma = Animation("images\\plasmaball1\\plasmaball1 ",11,3,game)
 
-bk = Animation("field ",5,3,game)
+bk = Animation("images\\field ",5,3,game)
 bk.moveTo(game.width/2,game.height/2)
 game.viewMouse(False)
 

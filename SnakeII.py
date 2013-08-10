@@ -2,12 +2,12 @@ from gamelib2 import *
 from SnakeClass import *
 
 game = Game(700,500,"Game")
-bob = Snake("greenCircle.png",5,30,game)
-apple = Image("apple.png",game)
+bob = Snake("images\\greenCircle.png",5,30,game)
+apple = Image("images\\apple.png",game)
 apple.resizeTo(25,25)
 apple.moveTo(randint(apple.width,game.width-apple.width),randint(apple.height,game.height-apple.height))
 
-bk = Image("dirt.jpg",game)
+bk = Image("images\\dirt.jpg",game)
 bk.moveTo(game.width/2,game.height/2)
 
 game.viewMouse(False)
