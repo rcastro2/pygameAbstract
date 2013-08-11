@@ -1,7 +1,7 @@
-from gamelib2 import *
+from gamelib import *
 from SnakeClass import *
 
-game = Game(700,500,"Game")
+game = Game(700,500,30,"Game")
 bob = Snake("images\\greenCircle.png",5,30,game)
 apple = Image("images\\apple.png",game)
 apple.resizeTo(25,25)
@@ -34,7 +34,12 @@ while not game.over:
         bob.addTail()
         apple.moveTo(randint(100,400),randint(100,400))
         game.increaseScore(10)
-    
-    game.drawText("Score: " + str(game.score),0,0,(255,255,255))
+
+    if game.time <= 0:
+        game.over = True
+
+    game.displayScore(0,0)
+    game.displayTime(200,0)
     game.update(20)
+    
 game.quit()

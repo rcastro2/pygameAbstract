@@ -1,8 +1,8 @@
-from gamelib2 import *
+from gamelib import *
 
-game = Game(700,500,"Game")
+game = Game(700,500,30,"Game")
 asteroid = Animation("images\\asteroid1\\asteroid1 ",41,2,game)
-asteroid.setSpeed(4,4)
+asteroid.setSpeed(45,4)
 
 hero = Image("images\\hero.gif",game)
 hero.moveTo(game.width/2,game.height/2)
@@ -40,7 +40,7 @@ while not game.over:
         plasma.move()
     if plasma.isOffScreen():
         plasma.makeVisible(False)
-
+    
     if game.keysPressed[K_LEFT]:
         hero.rotateTo("left",4)
     if game.keysPressed[K_RIGHT]:
@@ -51,17 +51,18 @@ while not game.over:
         hero.forward(3)
     else:
         hero.forward(hero.thrust *0.99)
-
+    
     if game.keysPressed[K_SPACE] and not plasma.visible:
         plasma.makeVisible(True)
         plasma.moveTo(hero.x,hero.y)
-        plasma.setSpeed(5*math.sin(hero.angle+math.pi),5*math.cos(hero.angle+math.pi))
-
-    if damage == 100:
+        plasma.setSpeed(math.degrees(hero.angle),5)
+        
+    if damage == 100 or game.time <= 0:
         game.over = True
-
-    game.drawText("Score: " + str(game.score),0,0,(255,255,255))
-    game.drawText("Damage: " + str(damage),200,0,(255,255,255))        
+    
+    game.displayScore(0,0)
+    game.displayTime(0,20)
+    game.drawText("Damage: " + str(damage),0,40)        
     game.update(60)
 #game.wait(K_ESCAPE)
 game.quit()
