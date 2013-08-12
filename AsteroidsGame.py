@@ -55,7 +55,7 @@ while not game.over:
     if game.keysPressed[K_SPACE] and not plasma.visible:
         plasma.makeVisible(True)
         plasma.moveTo(hero.x,hero.y)
-        plasma.setSpeed(math.degrees(hero.angle),5)
+        plasma.setSpeed(hero.getAngle(),5)
         
     if damage == 100 or game.time <= 0:
         game.over = True

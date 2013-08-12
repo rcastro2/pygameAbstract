@@ -4,6 +4,9 @@ from math import *
 from random import randint
 
 pygame.init()
+black, white, light_gray, dark_gray = (0,0,0), (255,255,255), (170,170,170), (85,85,85)
+red, green, blue = (255,0,0), (0,255,0), (0,0,255)
+yellow, magenta, cyan = (255,255,0), (255,0,255), (0,255,255)
 
 class Game(object):
     def __init__(self,w,h,time,title):
@@ -28,13 +31,13 @@ class Game(object):
     def increaseScore(self,amount):
         self.score += amount
         
-    def setMusic(self,path):
+    def setSound(self,path):
         pygame.mixer.music.load(path)
 
-    def playMusic(self):
+    def playSound(self):
         pygame.mixer.music.play(-1,0.0)
 
-    def stopMusic(self):
+    def stopSound(self):
         pygame.mixer.music.stop()
         
     def background(self,c):
@@ -83,6 +86,7 @@ class Image(object):
         self.image = pygame.image.load(path)
         self.width = self.image.get_width()
         self.height = self.image.get_height()
+        self.rect = None
         self.original = self.image
         self.angle, self.da = 0,0
         self.x, self.y, self.dx, self.dy, self.dxsign, self.dysign = 0,0,0,0,1,1
@@ -91,7 +95,7 @@ class Image(object):
         self.rotate = "still"
         self.thrust = 0
         self.visible = True
-    def collidedWith(self,obj):
+    def collidedWith(self,obj,shape="circle"):
         if obj == "mouse":
             dx = self.x - self.game.mouseX
             dy = self.y - self.game.mouseY
@@ -99,6 +103,8 @@ class Image(object):
             if d < self.width/3:
                 return True
         else:
+            if shape == "rectangular" and self.rect.colliderect(obj.rect):
+                return True
             dx = self.x - obj.x
             dy = self.y - obj.y
             d = sqrt(pow(dx,2) + pow(dy,2))
@@ -114,6 +120,7 @@ class Image(object):
             rot_rect = org_rect.copy()
             rot_rect.center = rot_img.get_rect().center
             self.image = rot_img.subsurface(rot_rect).copy()
+        self.rect = pygame.Rect(self.x,self.y,self.width,self.height)
         self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
         if self.visible:
             self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
@@ -160,8 +167,10 @@ class Image(object):
         self.visible = visibility
     def moveX(self,a):
         self.x = self.x + a
+        self.draw()
     def moveY(self,a):
-        self.y = self.y + a       
+        self.y = self.y + a
+        self.draw()
     def resizeTo(self,w,h):
         self.width = w
         self.height = h
@@ -170,6 +179,10 @@ class Image(object):
        return self.right < self.game.left or self.left > self.game.right or self.top > self.game.bottom or self.bottom < self.game.top
     def setImage(self,image):
         self.image = image
+    def getAngle(self,angle="deg"):
+        if angle == "deg":
+            return math.degrees(self.angle)
+        return self.angle
 
 class Animation(Image):
     def __init__(self,path,sequence,frate,game):
