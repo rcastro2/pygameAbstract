@@ -23,9 +23,9 @@ class Game(object):
         font = pygame.font.Font(None,24)
         text = font.render(msg,True,c)
         self.screen.blit(text,[x,y])
-    def displayScore(self,x,y,c=(255,255,255)):
+    def displayScore(self,x=5,y=5,c=(255,255,255)):
         self.drawText("Score: " + str(self.score),x,y,c)
-    def displayTime(self,x,y,c=(255,255,255)):
+    def displayTime(self,x=0,y=0,c=(255,255,255)):
         self.drawText("Time: " + str(int(self.time)),x,y,c)
         
     def increaseScore(self,amount):
@@ -167,10 +167,10 @@ class Image(object):
         self.visible = visibility
     def moveX(self,a):
         self.x = self.x + a
-        self.draw()
+        #self.draw()
     def moveY(self,a):
         self.y = self.y + a
-        self.draw()
+        #self.draw()
     def resizeTo(self,w,h):
         self.width = w
         self.height = h

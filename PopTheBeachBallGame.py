@@ -1,8 +1,8 @@
 from gamelib import *
 
-game = Game(700,500,30,"Game")
+game = Game(700,500,30,"Pop the BeachBall")
 ball = Image("images\\beachball.png",game)
-size = 100
+size = 200
 ball.resizeTo(size,size)
 ball.moveTo(game.width/2,game.height/2)
 speed = 2
@@ -10,6 +10,7 @@ ball.setSpeed(60,speed)
 
 cross = Image("images\\crosshair.png",game)
 bk = Image("images\\beach.jpg",game)
+bk.resizeTo(game.width, game.height)
 bk.moveTo(game.width/2,game.height/2)
 
 game.viewMouse(False)
