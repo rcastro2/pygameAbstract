@@ -11,7 +11,7 @@ robot.moveTo(game.width / 2, game.height - 60)
 explosion = Animation("images\\explosion\\explosion ",22,1,game)
 explosion.makeVisible(False)
 
-volcanos = []
+volcanoes = []
 bomb = Animation("images\\bomb\\bomb ",6,4,game)
 bomb.moveTo(randint(100,800),-100)
 speed = 2
@@ -21,7 +21,7 @@ while not game.over:
     game.processInput()
     bk.draw()
     bomb.move()
-    for volcano in volcanos:
+    for volcano in volcanoes:
         volcano.draw()
 
     robot.draw()
@@ -40,11 +40,11 @@ while not game.over:
         bomb.setSpeed(180,speed)
         
     if bomb.bottom > game.height - 50:
-        volcanos.append(Animation("images\\volcano\\volcano ",8,2,game))
-        volcanos[len(volcanos)-1].moveTo(bomb.x,bomb.y)
+        volcanoes.append(Animation("images\\volcano\\volcano ",8,2,game))
+        volcanoes[len(volcanoes)-1].moveTo(bomb.x,bomb.y)
         bomb.moveTo(randint(100,800),-100)
 
-    if len(volcanos) >= 10:
+    if len(volcanoes) >= 10:
         game.over = True
 
     game.displayScore()
