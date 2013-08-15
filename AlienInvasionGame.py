@@ -14,7 +14,8 @@ explosion.makeVisible(False)
 volcanos = []
 bomb = Animation("images\\bomb\\bomb ",6,4,game)
 bomb.moveTo(randint(100,800),-100)
-bomb.setSpeed(180,2)
+speed = 2
+bomb.setSpeed(180,speed)
 
 while not game.over:
     game.processInput()
@@ -35,11 +36,16 @@ while not game.over:
         explosion.makeVisible(True)
         game.increaseScore(10)
         bomb.moveTo(randint(100,800),-100)
+        speed += 0.25
+        bomb.setSpeed(180,speed)
         
     if bomb.bottom > game.height - 50:
         volcanos.append(Animation("images\\volcano\\volcano ",8,2,game))
         volcanos[len(volcanos)-1].moveTo(bomb.x,bomb.y)
         bomb.moveTo(randint(100,800),-100)
+
+    if len(volcanos) >= 10:
+        game.over = True
 
     game.displayScore()
     game.update(60)
