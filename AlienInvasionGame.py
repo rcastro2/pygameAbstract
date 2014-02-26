@@ -1,21 +1,19 @@
 from gamelib import *
 
-game = Game(900,500,30,"Alien Invasion")
+game = Game(900,500,"Alien Invasion",30)
 bk = Image("images\\landscape.jpg",game)
 bk.resizeTo(game.width, game.height)
-bk.moveTo(game.width/2,game.height/2)
 
-robot = Animation("images\\robot\\robot ",30,2,game)
+robot = Animation("images\\robot\\robot ",30,game,2)
 robot.moveTo(game.width / 2, game.height - 60)
 
-explosion = Animation("images\\explosion\\explosion ",22,1,game)
+explosion = Animation("images\\explosion\\explosion ",22,game)
 explosion.makeVisible(False)
 
 volcanoes = []
-bomb = Animation("images\\bomb\\bomb ",6,4,game)
+bomb = Animation("images\\bomb\\bomb ",6,game,4)
 bomb.moveTo(randint(100,800),-100)
-speed = 2
-bomb.setSpeed(180,speed)
+bomb.setSpeed(2,180)
 
 while not game.over:
     game.processInput()
@@ -26,9 +24,9 @@ while not game.over:
 
     robot.draw()
     explosion.draw(False)
-    if game.keysPressed[K_LEFT] and robot.left > game.left:
+    if keys.Pressed[K_LEFT] and robot.left > game.left:
         robot.moveX(-4)
-    elif game.keysPressed[K_RIGHT] and robot.right < game.right:
+    elif keys.Pressed[K_RIGHT] and robot.right < game.right:
         robot.moveX(4)
 
     if robot.collidedWith(bomb):
@@ -36,11 +34,10 @@ while not game.over:
         explosion.makeVisible(True)
         game.increaseScore(10)
         bomb.moveTo(randint(100,800),-100)
-        speed += 0.25
-        bomb.setSpeed(180,speed)
+        bomb.speed += 0.25
         
     if bomb.bottom > game.height - 50:
-        volcanoes.append(Animation("images\\volcano\\volcano ",8,2,game))
+        volcanoes.append(Animation("images\\volcano\\volcano ",8,game,2))
         volcanoes[len(volcanoes)-1].moveTo(bomb.x,bomb.y)
         bomb.moveTo(randint(100,800),-100)
 

@@ -1,39 +1,43 @@
 from gamelib import *
 
-game = Game(700,500,30,"Pop the BeachBall")
+game = Game(700,500,"Pop the BeachBall",10)
 ball = Image("images\\beachball.png",game)
-size = 200
-ball.resizeTo(size,size)
-ball.moveTo(game.width/2,game.height/2)
-speed = 2
-ball.setSpeed(60,speed)
+ball.resizeTo(ball.width / 2, ball.height / 2)
+
+ball.setSpeed(2,60)
 
 cross = Image("images\\crosshair.png",game)
 bk = Image("images\\beach.jpg",game)
 bk.resizeTo(game.width, game.height)
-bk.moveTo(game.width/2,game.height/2)
 
 game.viewMouse(False)
-while not game.over:
-    game.processInput()
-    bk.draw()
-    ball.move(True) 
-    cross.moveTo(game.mouseX,game.mouseY)
-    if game.mouseLB and ball.collidedWith("mouse"):
-        game.increaseScore(10)
-        choice = randint(1,4)
-        if choice == 1:
-            speed += 1
-            ball.setSpeed(math.degrees(ball.angle),speed)
-        elif choice == 2:
-            ball.moveTo(randint(ball.width,game.width - ball.width), randint(ball.height,game.height-ball.height))
-        elif choice == 3:
-            size -= 10
-            ball.resizeTo(size,size)
 
-    game.displayTime(200,0)
-    game.displayScore(0,0)
-    if game.time <= 0:
-        game.over = True
-    game.update(60)
+#Game Loop
+while not game.over:
+        game.processInput()
+        bk.draw()
+        ball.move(True) 
+        cross.moveTo(mouse.x,mouse.y)
+        if mouse.LeftButton and ball.collidedWith(mouse):
+                game.increaseScore(10)
+                x = randint(ball.width,game.width - ball.width)
+                y = randint(ball.height,game.height-ball.height)
+                ball.moveTo(x, y)
+                choice = randint(1,3)
+                if choice == 1:
+                        ball.speed += 4
+                        game.time += 5
+                elif choice == 2:
+                        ball.width -= 10
+                        ball.height -= 10
+                       
+        game.displayTime(200,0)
+        game.displayScore(0,0)
+        if game.time <= 0:
+                game.over = True
+        game.update(60)
+#End Loop
+game.drawText("Press [Space] to exit.",250,250,white,True)
+game.wait(K_SPACE)
+
 game.quit()

@@ -1,14 +1,13 @@
 from gamelib import *
 from SnakeClass import *
 
-game = Game(700,500,30,"Game")
+game = Game(700,500,"Game",30)
 bob = Snake("images\\greenCircle.png",5,30,game)
 apple = Image("images\\apple.png",game)
 apple.resizeTo(25,25)
 apple.moveTo(randint(apple.width,game.width-apple.width),randint(apple.height,game.height-apple.height))
 
 bk = Image("images\\dirt.jpg",game)
-bk.moveTo(game.width/2,game.height/2)
 
 game.viewMouse(False)
 
@@ -18,16 +17,16 @@ while not game.over:
     apple.draw()
     bob.draw()
   
-    if game.keysPressed[K_LEFT]:
+    if keys.Pressed[K_LEFT]:
         bob.adjustTail()
         bob.move(-10,0)
-    if game.keysPressed[K_RIGHT]:
+    if keys.Pressed[K_RIGHT]:
         bob.adjustTail()
         bob.move(10,0)
-    if game.keysPressed[K_UP]:
+    if keys.Pressed[K_UP]:
         bob.adjustTail()
         bob.move(0,-10)
-    if game.keysPressed[K_DOWN]:
+    if keys.Pressed[K_DOWN]:
         bob.adjustTail()
         bob.move(0,10)
     if bob.eats(apple):
