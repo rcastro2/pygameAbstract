@@ -1,18 +1,17 @@
 from gamelib import *
 
-game = Game(800,600,"Game",60)
-game.setMusic("starwars.wav")
+game = Game(800,600,"Game",5)
+game.setMusic("sound\\starwars.wav")
 game.playMusic()
 
-shot = Sound("blaster.wav")
-fly = Sound("fly1.wav")
-boom = Sound("Arcade Explo A.wav")
+shot = Sound("sound\\blaster.wav")
+fly = Sound("sound\\fly1.wav")
+boom = Sound("sound\\Arcade Explo A.wav")
 
 asteroid = Animation("images\\asteroid1\\asteroid1 ",41,game)
 asteroid.setSpeed(4,45)
 
 hero = Image("images\\hero.gif",game)
-hero.moveTo(game.width/2,game.height/2)
 
 explode = Animation("images\\explosion\\explosion ",22,game)
 explode.makeVisible(False)
@@ -31,13 +30,13 @@ while not game.over:
     explode.draw(False)
     
     if keys.Pressed[K_LEFT] or joy.pad[E]:
-        hero.rotateBy(2,"left")
+        hero.rotateBy(3,"left")
     if keys.Pressed[K_RIGHT] or joy.pad[W]:
-        hero.rotateBy(2,"right")
+        hero.rotateBy(3,"right")
     if not keys.Pressed[K_LEFT] and not keys.Pressed[K_RIGHT] and joy.pad[C]:
         hero.rotateBy(0,"still")
     if keys.Pressed[K_UP] or joy.button[4]:
-        hero.forward(1)
+        hero.forward(2)
         fly.play()
     else:
         hero.forward(hero.speed *0.99)
@@ -78,5 +77,8 @@ while not game.over:
     game.displayTime(0,20)
     game.drawText("Damage: " + str(hero.damage),0,40)  
     game.update(60)
-    
+
+game.drawText("Game Over (Press SPACE to exit)",game.width/2,100,update="True")
+game.wait(K_SPACE)
+
 game.quit()

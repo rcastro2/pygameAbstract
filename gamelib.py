@@ -22,18 +22,26 @@ class KeyBoard(object):
 
 class Joystick(object):
         def __init__(self):
-                self.joystick = pygame.joystick.Joystick(0)
-                self.joystick.init()
                 self.pad = [0 for x in range(9)]
-                self.button = [0 for x in range(self.joystick.get_numbuttons())]
+                self.button = [0 for x in range(12)]
+                if pygame.joystick.get_count() == 0:
+                        self.pad[8] = True
+                        self.connected = False
+                        print("No Joystick Connected")
+                else:
+                        self.connected = True
+                        self.joystick = pygame.joystick.Joystick(0)
+                        self.joystick.init()
+                        self.pad = [0 for x in range(9)]
+                        self.button = [0 for x in range(self.joystick.get_numbuttons())]
         def stick(self,s="left",axis="x"):
-                pole = 0
-                if s == "right":
-                        pole += 2
-                if axis == "y":
-                       pole += 1
-
-                return self.joystick.get_axis(pole)
+                if self.connected:
+                        pole = 0
+                        if s == "right":
+                                pole += 2
+                        if axis == "y":
+                               pole += 1
+                        return self.joystick.get_axis(pole)
                 
         
 keys = KeyBoard()
@@ -115,16 +123,17 @@ class Game(object):
             button = pygame.mouse.get_pressed()
             mouse.LeftButton = button[0]
             mouse.RightButton = button[2]
-            padx,pady = joy.joystick.get_hat(0)
-            joy.pad = [0 for x in range(9)]
-            if padx == 0 and pady == 1: joy.pad[N] = True
-            if padx == -1 and pady == 0: joy.pad[E] = True
-            if padx == 0 and pady == -1: joy.pad[S] = True
-            if padx == 1 and pady == 0: joy.pad[W] = True
-            if padx == 0 and pady == 0: joy.pad[C] = True
+            if joy.connected:
+                    padx,pady = joy.joystick.get_hat(0)
+                    joy.pad = [0 for x in range(9)]
+                    if padx == 0 and pady == 1: joy.pad[N] = True
+                    if padx == -1 and pady == 0: joy.pad[E] = True
+                    if padx == 0 and pady == -1: joy.pad[S] = True
+                    if padx == 1 and pady == 0: joy.pad[W] = True
+                    if padx == 0 and pady == 0: joy.pad[C] = True
 
-            for x in range(len(joy.button)):
-                    joy.button[x] = joy.joystick.get_button(x)
+                    for x in range(len(joy.button)):
+                            joy.button[x] = joy.joystick.get_button(x)
             
             
 
