@@ -1,12 +1,12 @@
 from gamelib import *
 
-game = Game(800,600,"Game",5)
+game = Game(800,600,"Game",60)
 game.setMusic("sound\\starwars.wav")
 game.playMusic()
 
-shot = Sound("sound\\blaster.wav")
-fly = Sound("sound\\fly1.wav")
-boom = Sound("sound\\Arcade Explo A.wav")
+shot = Sound("sound\\blaster.wav",1)
+fly = Sound("sound\\fly1.wav",2)
+boom = Sound("sound\\Arcade Explo A.wav",3)
 
 asteroid = Animation("images\\asteroid1\\asteroid1 ",41,game)
 asteroid.setSpeed(4,45)
@@ -37,7 +37,7 @@ while not game.over:
         hero.rotateBy(0,"still")
     if keys.Pressed[K_UP] or joy.button[4]:
         hero.forward(2)
-        fly.play()
+        fly.play(4000)
     else:
         hero.forward(hero.speed *0.99)
     

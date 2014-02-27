@@ -49,14 +49,14 @@ mouse = Mouse()
 joy = Joystick()
 
 class Sound(object):
-    def __init__(self,path):
+    def __init__(self,path,chan):
+        self.chan = chan
         self.file = pygame.mixer.Sound(path)
 
-    def play(self):
-        self.file.play()
-
-    def stop(self):
-        self.file.stop()
+    def play(self,time=0):
+        c = pygame.mixer.Channel(self.chan)
+        if not c.get_busy():
+                c.play(self.file,maxtime=time)
 
 class Game(object):
     def __init__(self,w,h,title,time=0):
