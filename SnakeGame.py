@@ -32,7 +32,7 @@ while not game.over:
     if bob.eats(apple):
         bob.addTail()
         apple.moveTo(randint(100,400),randint(100,400))
-        game.increaseScore(10)
+        game.score += 10
 
     if game.time <= 0:
         game.over = True

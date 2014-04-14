@@ -61,6 +61,6 @@ while not game.over:
     game.displayScore(0,0)
     game.displayTime(0,20)
     game.drawText("Damage: " + str(hero.damage),0,40)   
-    game.update(60)
+    game.update(100)
     
 game.quit()

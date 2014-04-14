@@ -19,7 +19,7 @@ while not game.over:
         ball.move(True) 
         cross.moveTo(mouse.x,mouse.y)
         if mouse.LeftButton and ball.collidedWith(mouse):
-                game.increaseScore(10)
+                game.score += 10
                 x = randint(ball.width,game.width - ball.width)
                 y = randint(ball.height,game.height-ball.height)
                 ball.moveTo(x, y)

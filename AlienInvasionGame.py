@@ -32,7 +32,7 @@ while not game.over:
     if robot.collidedWith(bomb):
         explosion.moveTo(robot.x, robot.y)
         explosion.makeVisible(True)
-        game.increaseScore(10)
+        game.score += 10
         bomb.moveTo(randint(100,800),-100)
         bomb.speed += 0.25
         

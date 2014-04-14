@@ -253,6 +253,9 @@ class Image(object):
         self.x = self.x + a
     def moveY(self,a):
         self.y = self.y + a
+    def moveY(self,a,b):
+        self.x = self.y + a
+	    self.y = self.y + b
 
     def resizeTo(self,w,h):
         self.width, self.oldwidth = int(w), int(w)

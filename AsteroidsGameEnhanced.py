@@ -9,7 +9,7 @@ fly = Sound("sound\\fly1.wav",2)
 boom = Sound("sound\\Arcade Explo A.wav",3)
 
 asteroid = Animation("images\\asteroid1\\asteroid1 ",41,game)
-asteroid.setSpeed(4,45)
+asteroid.setSpeed(6,45)
 
 hero = Image("images\\hero.gif",game)
 
@@ -36,7 +36,7 @@ while not game.over:
     if not keys.Pressed[K_LEFT] and not keys.Pressed[K_RIGHT] and joy.pad[C]:
         hero.rotateBy(0,"still")
     if keys.Pressed[K_UP] or joy.button[4]:
-        hero.forward(2)
+        hero.forward(4)
         fly.play(4000)
     else:
         hero.forward(hero.speed *0.99)
@@ -68,7 +68,7 @@ while not game.over:
         shot.play()
         plasma.makeVisible(True)
         plasma.moveTo(hero.x,hero.y)
-        plasma.setSpeed(8,hero.getAngle())
+        plasma.setSpeed(20,hero.getAngle())
         
     if hero.damage == 100 or game.time <= 0:
         game.over = True
