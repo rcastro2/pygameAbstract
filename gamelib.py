@@ -166,6 +166,7 @@ class Image(object):
         
     def setImage(self,image):
         self.image = image
+        self.original = image
         
     def collidedWith(self,obj,shape="circle"):
         if obj == "mouse":
@@ -253,9 +254,9 @@ class Image(object):
         self.x = self.x + a
     def moveY(self,a):
         self.y = self.y + a
-    def moveY(self,a,b):
+    def moveXY(self,a,b):
         self.x = self.y + a
-	    self.y = self.y + b
+        self.y = self.y + b
 
     def resizeTo(self,w,h):
         self.width, self.oldwidth = int(w), int(w)
@@ -270,15 +271,34 @@ class Image(object):
         return self.angle
 
 class Animation(Image):
-    def __init__(self,path,sequence,game,frate = 1):
-        Image.__init__(self,path + "1.gif",game)
+    def __init__(self,path,sequence,game, width = 0, height = 0,frate = 1):
+        self.f, self.frate, self.ftick = 0,frate,0
         self.game = game
         self.images = []
-        self.original = []
-        for i in range(sequence):
-            self.images.append(pygame.image.load(path + str(i+1) + ".gif"))
-            self.original.append(self.images[i])
-        self.f, self.frate, self.ftick = 0,frate,0
+        self.source = []
+        if width == 0 and height == 0:
+            Image.__init__(self,path + "1.gif",game)
+            for i in range(sequence):
+                self.images.append(pygame.image.load(path + str(i+1) + ".gif"))
+                self.source.append(self.images[i])
+        else:      
+            self.sheet = pygame.image.load(path).convert_alpha()
+            pygame.image.save(self.sheet.subsurface((0,0,width,height)),"tmp.png")
+            Image.__init__(self,"tmp.png",game)
+            self.frame_width, self.frame_height = width, height
+            self.frame_rect = 0,0,width,height
+            try:
+                self.columns = self.sheet.get_width() / width
+            except:
+                print("Wrong size sheet")
+            for i in range(sequence):
+                frame_x = (i % self.columns) * self.frame_width
+                frame_y = (i // self.columns) * self.frame_height
+                rect = ( frame_x, frame_y, self.frame_width, self.frame_height )
+                frame_image = self.sheet.subsurface(rect)
+                self.images.append(frame_image)
+                self.source.append(frame_image)
+		
     def draw(self, loop = True):
         if self.visible:
             Image.setImage(self, self.images[self.f])
@@ -297,4 +317,4 @@ class Animation(Image):
     def resizeTo(self,w,h):
         self.width, self.height = w, h
         for i in range(len(self.images)):
-            self.images[i] = pygame.transform.scale(self.original[i],(self.width,self.height))
+            self.images[i] = pygame.transform.scale(self.source[i],(self.width,self.height))
