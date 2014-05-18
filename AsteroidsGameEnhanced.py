@@ -17,6 +17,7 @@ explode = Animation("images\\explosion\\explosion ",22,game)
 explode.makeVisible(False)
 
 plasma = Animation("images\\plasmaball1\\plasmaball1 ",11,game)
+plasma.makeVisible(False)
 
 bk = Animation("images\\field ",5,game)
 
@@ -31,8 +32,10 @@ while not game.over:
     
     if keys.Pressed[K_LEFT] or joy.pad[E]:
         hero.rotateBy(3,"left")
+        asteroid.nextFrame()
     if keys.Pressed[K_RIGHT] or joy.pad[W]:
         hero.rotateBy(3,"right")
+        asteroid.prevFrame()
     if not keys.Pressed[K_LEFT] and not keys.Pressed[K_RIGHT] and joy.pad[C]:
         hero.rotateBy(0,"still")
     if keys.Pressed[K_UP] or joy.button[4]:
@@ -43,6 +46,7 @@ while not game.over:
     
     if asteroid.collidedWith(plasma):
         boom.play()
+        asteroid.playAnim = not asteroid.playAnim
         plasma.makeVisible(False)
         game.score += 10
         explode.moveTo(asteroid.x,asteroid.y)
@@ -76,7 +80,7 @@ while not game.over:
     game.displayScore(0,0)
     game.displayTime(0,20)
     game.drawText("Damage: " + str(hero.damage),0,40)  
-    game.update(60)
+    game.update(30)
 
 game.drawText("Game Over (Press SPACE to exit)",game.width/2,100,update="True")
 game.wait(K_SPACE)

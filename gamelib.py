@@ -135,8 +135,6 @@ class Game(object):
                     for x in range(len(joy.button)):
                             joy.button[x] = joy.joystick.get_button(x)
             
-            
-
     def wait(self,key):
         while True:
             self.processInput()
@@ -149,11 +147,11 @@ class Game(object):
 class Image(object):
     def __init__(self,path,game):
         self.game = game
-        self.image = pygame.image.load(path)
-        self.width,self.oldwidth = self.image.get_width(),self.image.get_width()
-        self.height, self.oldheight = self.image.get_height(), self.image.get_height()
+        self.image = pygame.image.load(path).convert_alpha()
+        self.width,self.original_width,self.oldwidth = self.image.get_width(),self.image.get_width(),self.image.get_width()
+        self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
         self.rect = None
-        self.original = self.image
+        self.original, self.src = self.image, self.image
         self.angle, self.da = 0,0
         self.x, self.y, self.dx, self.dy, self.dxsign, self.dysign = self.game.width/2,self.game.height/2,0,0,1,1
         self.left, self.top, self.right, self.bottom = 0,0,0,0
@@ -169,65 +167,35 @@ class Image(object):
         self.original = image
         
     def collidedWith(self,obj,shape="circle"):
-        if obj == "mouse":
-            dx = self.x - self.game.mouseX
-            dy = self.y - self.game.mouseY
-            d = sqrt(pow(dx,2) + pow(dy,2))
-            if d < self.width/3:
-                return True
-        else:
-            if shape == "rectangular" and self.rect.colliderect(obj.rect):
-                return True
-            dx = self.x - obj.x
-            dy = self.y - obj.y
-            d = sqrt(pow(dx,2) + pow(dy,2))
-            if d < self.width/3 + obj.width/3 and obj.visible:
-                return True
+        if obj.visible and self.visible:
+            if obj == "mouse":
+                dx = self.x - self.game.mouseX
+                dy = self.y - self.game.mouseY
+                d = sqrt(pow(dx,2) + pow(dy,2))
+                if d < self.width/3:
+                    return True
+            else:
+                if shape == "rectangular" and self.rect.colliderect(obj.rect):
+                    return True
+                dx = self.x - obj.x
+                dy = self.y - obj.y
+                d = sqrt(pow(dx,2) + pow(dy,2))
+                if d < self.width/3 + obj.width/3 and obj.visible:
+                    return True
         return False
 
     def draw(self):
-        #tmp = self.image
-        #w,h = self.width, self.height
-        #tmp = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
-        #w,h = tmp.get_width(),tmp.get_height()
-        if self.width != self.oldwidth or self.height != self.oldheight:
-            self.resizeTo(self.width,self.height)
+        if self.original_width != self.oldwidth or self.original_height != self.oldheight:
+            self.resizeTo(self.original_width,self.original_height)
         if self.rotate == "left" or self.rotate == "right":
             self.angle = self.angle + self.da
-            self.image = self.original#pygame.transform.scale(self.original,(self.width,self.height))
-            #tmp = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
-            #w,h = tmp.get_width(),tmp.get_height()
+            self.image = self.original
             self.image = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
-            #w,h = self.image.get_width(),self.image.get_height()
             self.width,self.height = self.image.get_width(),self.image.get_height()
-            self.oldwidth,self.oldheight = self.image.get_width(),self.image.get_height()
-            #org_rect = self.image.get_rect()
-            '''
-            rot_img = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
-            tmp = rot_img
-            w,h = rot_img.get_width(),rot_img.get_height()'''
-            #self.game.screen.blit(rot_img, [self.x - self.width/2,self.y - self.height/2])
-            '''self.game.screen.blit(rot_img, [self.x - rot_img.get_width()/2,self.y - rot_img.get_height()/2])
-            pygame.draw.rect(self.game.screen, (255,0,0), (self.x - self.width/2,self.y - self.height/2,self.image.get_width(),self.image.get_height()), 4)
-            pygame.draw.rect(self.game.screen, (255,255,0), (self.x - rot_img.get_width()/2,self.y - rot_img.get_height()/2,rot_img.get_width(),rot_img.get_height()), 2)
-            rot_rect = org_rect.copy()
-            rot_rect.center = rot_img.get_rect().center'''
-            #tmp_img = rot_img.subsurface(rot_rect).copy()
-            #self.game.screen.blit(tmp_img, [self.x - self.width/2,self.y - self.height/2])
-            #self.image = rot_img.subsurface(rot_rect).copy()
         if self.visible:
-           #self.game.screen.blit(self.image, [self.x - w/2,self.y - h/2])
            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
-           #self.game.screen.blit(tmp, [self.x - w/2,self.y - h/2])
         self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
         self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
-
-        '''
-        Notes:
-        1) Instead of reassigning the rotated image back to self.image simply draw in it
-        2) Since the rotated image is not being reassigned back to self.image, in order to center it about x,y we must 
-           use its width and height and not that of self.image
-        '''
             
     def move(self, bounce = False):
         if bounce:
@@ -287,9 +255,12 @@ class Image(object):
         self.y = self.y + b
 
     def resizeTo(self,w,h):
-        self.width, self.oldwidth = int(w), int(w)
-        self.height, self.oldheight = int(h), int(h)
-        self.image = pygame.transform.scale(self.original,(self.width,self.height))
+        self.original_width, self.original_height = int(w), int(h)
+        self.oldwidth,self.oldheight = int(w),int(h)
+        self.original = pygame.transform.scale(self.src,(self.original_width,self.original_height))
+        self.image = pygame.transform.rotate(self.original,self.angle * 180 / math.pi)
+        self.width,self.height = self.image.get_width(),self.image.get_height()
+        
     def isOffScreen(self):
        return self.right < self.game.left or self.left > self.game.right or self.top > self.game.bottom or self.bottom < self.game.top
 
@@ -302,12 +273,13 @@ class Animation(Image):
     def __init__(self,path,sequence,game, width = 0, height = 0,frate = 1):
         self.f, self.frate, self.ftick = 0,frate,0
         self.game = game
+        self.playAnim = True
         self.images = []
         self.source = []
         if width == 0 and height == 0:
             Image.__init__(self,path + "1.gif",game)
             for i in range(sequence):
-                self.images.append(pygame.image.load(path + str(i+1) + ".gif"))
+                self.images.append(pygame.image.load(path + str(i+1) + ".gif").convert_alpha())
                 self.source.append(self.images[i])
         else:      
             self.sheet = pygame.image.load(path).convert_alpha()
@@ -326,13 +298,25 @@ class Animation(Image):
                 frame_image = self.sheet.subsurface(rect)
                 self.images.append(frame_image)
                 self.source.append(frame_image)
-		
+    def play(self):
+        self.playAnim = True
+    def stop(self):
+        self.playAnim = False
+    def nextFrame(self):
+        self.f += 1
+        if self.f > len(self.images)-1:
+            self.f = 0
+        self.draw()
+    def prevFrame(self):
+        self.f -= 1
+        if self.f < 0:
+            self.f = len(self.images)-1	
+        self.draw()	
     def draw(self, loop = True):
         if self.visible:
             Image.setImage(self, self.images[self.f])
             Image.draw(self)
-            self.ftick += 1
-            if self.ftick % self.frate == 0:
+            if self.ftick % self.frate == 0 and self.playAnim:
                 self.f += 1
                 self.ftick = 0
             if self.f > len(self.images)-1:
@@ -341,7 +325,6 @@ class Animation(Image):
                 self.visible = False
     def rotateBy(self,angle=0,direction="right"):
         Image.rotateBy(self,angle,direction)
-        #print("rotateBy(...) can not be used with an Animation")
         return	
     def resizeTo(self,w,h):
         self.width, self.height = w, h

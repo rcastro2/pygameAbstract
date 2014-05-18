@@ -1,6 +1,6 @@
 from gamelib import *
 
-game = Game(700,500,"Pop the BeachBall",10)
+game = Game(700,500,"Pop the BeachBall",20)
 ball = Image("images\\beachball.png",game)
 ball.resizeTo(ball.width / 2, ball.height / 2)
 
@@ -28,8 +28,8 @@ while not game.over:
                         ball.speed += 4
                         game.time += 5
                 elif choice == 2:
-                        ball.width -= 10
-                        ball.height -= 10
+                        ball.original_width -= 5
+                        ball.original_height -= 5
                        
         game.displayTime(200,0)
         game.displayScore(0,0)

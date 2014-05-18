@@ -4,14 +4,14 @@ game = Game(900,500,"Alien Invasion",30)
 bk = Image("images\\landscape.jpg",game)
 bk.resizeTo(game.width, game.height)
 
-robot = Animation("images\\robot\\robot ",30,game,2)
+robot = Animation("images\\robot\\robot ",30,game,frate=2)
 robot.moveTo(game.width / 2, game.height - 60)
 
 explosion = Animation("images\\explosion\\explosion ",22,game)
 explosion.makeVisible(False)
 
 volcanoes = []
-bomb = Animation("images\\bomb\\bomb ",6,game,4)
+bomb = Animation("images\\bomb\\bomb ",6,game,frate=4)
 bomb.moveTo(randint(100,800),-100)
 bomb.setSpeed(2,180)
 
@@ -37,7 +37,7 @@ while not game.over:
         bomb.speed += 0.25
         
     if bomb.bottom > game.height - 50:
-        volcanoes.append(Animation("images\\volcano\\volcano ",8,game,2))
+        volcanoes.append(Animation("images\\volcano\\volcano ",8,game,frate=2))
         volcanoes[len(volcanoes)-1].moveTo(bomb.x,bomb.y)
         bomb.moveTo(randint(100,800),-100)
 
@@ -45,5 +45,5 @@ while not game.over:
         game.over = True
 
     game.displayScore()
-    game.update(60)
+    game.update(30)
 game.quit()
