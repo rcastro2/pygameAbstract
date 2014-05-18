@@ -186,20 +186,48 @@ class Image(object):
         return False
 
     def draw(self):
+        #tmp = self.image
+        #w,h = self.width, self.height
+        #tmp = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
+        #w,h = tmp.get_width(),tmp.get_height()
         if self.width != self.oldwidth or self.height != self.oldheight:
             self.resizeTo(self.width,self.height)
         if self.rotate == "left" or self.rotate == "right":
             self.angle = self.angle + self.da
-            self.image = pygame.transform.scale(self.original,(self.width,self.height))
-            org_rect = self.image.get_rect()
+            self.image = self.original#pygame.transform.scale(self.original,(self.width,self.height))
+            #tmp = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
+            #w,h = tmp.get_width(),tmp.get_height()
+            self.image = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
+            #w,h = self.image.get_width(),self.image.get_height()
+            self.width,self.height = self.image.get_width(),self.image.get_height()
+            self.oldwidth,self.oldheight = self.image.get_width(),self.image.get_height()
+            #org_rect = self.image.get_rect()
+            '''
             rot_img = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
+            tmp = rot_img
+            w,h = rot_img.get_width(),rot_img.get_height()'''
+            #self.game.screen.blit(rot_img, [self.x - self.width/2,self.y - self.height/2])
+            '''self.game.screen.blit(rot_img, [self.x - rot_img.get_width()/2,self.y - rot_img.get_height()/2])
+            pygame.draw.rect(self.game.screen, (255,0,0), (self.x - self.width/2,self.y - self.height/2,self.image.get_width(),self.image.get_height()), 4)
+            pygame.draw.rect(self.game.screen, (255,255,0), (self.x - rot_img.get_width()/2,self.y - rot_img.get_height()/2,rot_img.get_width(),rot_img.get_height()), 2)
             rot_rect = org_rect.copy()
-            rot_rect.center = rot_img.get_rect().center
-            self.image = rot_img.subsurface(rot_rect).copy()
+            rot_rect.center = rot_img.get_rect().center'''
+            #tmp_img = rot_img.subsurface(rot_rect).copy()
+            #self.game.screen.blit(tmp_img, [self.x - self.width/2,self.y - self.height/2])
+            #self.image = rot_img.subsurface(rot_rect).copy()
+        if self.visible:
+           #self.game.screen.blit(self.image, [self.x - w/2,self.y - h/2])
+           self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
+           #self.game.screen.blit(tmp, [self.x - w/2,self.y - h/2])
         self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
         self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
-        if self.visible:
-            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
+
+        '''
+        Notes:
+        1) Instead of reassigning the rotated image back to self.image simply draw in it
+        2) Since the rotated image is not being reassigned back to self.image, in order to center it about x,y we must 
+           use its width and height and not that of self.image
+        '''
             
     def move(self, bounce = False):
         if bounce:
@@ -312,7 +340,8 @@ class Animation(Image):
             if not loop and self.f == 0:
                 self.visible = False
     def rotateBy(self,angle=0,direction="right"):
-        print("rotateBy(...) can not be used with an Animation")
+        Image.rotateBy(self,angle,direction)
+        #print("rotateBy(...) can not be used with an Animation")
         return	
     def resizeTo(self,w,h):
         self.width, self.height = w, h
