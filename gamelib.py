@@ -263,11 +263,7 @@ class Image(object):
         self.width,self.height = self.image.get_width(),self.image.get_height()
     def resizeBy(self,pct):
         factor = 1 + pct / 100
-        self.original_width, self.original_height = int(self.original_width * factor), int(self.original_height * factor)
-        self.oldwidth,self.oldheight = self.original_width, self.original_height
-        self.original = pygame.transform.scale(self.src,(self.original_width,self.original_height))
-        self.image = pygame.transform.rotate(self.original,self.angle * 180 / math.pi)
-        self.width,self.height = self.image.get_width(),self.image.get_height()
+		self.resizeTo(int(self.original_width * factor), int(self.original_height * factor))
 
     def isOffScreen(self):
        return self.right < self.game.left or self.left > self.game.right or self.top > self.game.bottom or self.bottom < self.game.top
@@ -338,3 +334,6 @@ class Animation(Image):
         self.width, self.height = w, h
         for i in range(len(self.images)):
             self.images[i] = pygame.transform.scale(self.source[i],(self.width,self.height))
+    def resizeBy(self,pct):
+		factor = 1 - pct / 100
+		self.resizeTo(self.width * factor, self.height * factor)
