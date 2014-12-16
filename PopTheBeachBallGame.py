@@ -16,7 +16,7 @@ game.viewMouse(False)
 while not game.over:
         game.processInput()
         bk.draw()
-        ball.move(True) 
+        ball.move(True)
         cross.moveTo(mouse.x,mouse.y)
         if mouse.LeftButton and ball.collidedWith(mouse):
                 game.score += 10
@@ -28,9 +28,10 @@ while not game.over:
                         ball.speed += 4
                         game.time += 5
                 elif choice == 2:
-                        ball.original_width -= 5
-                        ball.original_height -= 5
-                       
+                        ball.resizeBy(-5)
+                        #ball.original_width -= 5
+                        #ball.original_height -= 5
+
         game.displayTime(200,0)
         game.displayScore(0,0)
         if game.time <= 0:

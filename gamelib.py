@@ -1,5 +1,5 @@
 import pygame,math
-from pygame.locals import * 
+from pygame.locals import *
 from math import *
 from random import randint
 
@@ -42,8 +42,8 @@ class Joystick(object):
                         if axis == "y":
                                pole += 1
                         return self.joystick.get_axis(pole)
-                
-        
+
+
 keys = KeyBoard()
 mouse = Mouse()
 joy = Joystick()
@@ -63,20 +63,20 @@ class Game(object):
         self.width,self.height = w,h
         pygame.display.set_caption(title)
         self.screen = pygame.display.set_mode([w,h]);
-        self.fps, self.time, self.clock = 20, time + 1, pygame.time.Clock()   
+        self.fps, self.time, self.clock = 20, time + 1, pygame.time.Clock()
         self.left, self.top, self.right, self.bottom = 0,0,w,h
         self.over, self.score = False,0
-        
+
     def drawText(self,msg,x,y,c=(255,255,255),update=False):
         font = pygame.font.Font(None,24)
         text = font.render(str(msg),True,c)
         self.screen.blit(text,[x,y])
-        if update: 
+        if update:
              pygame.display.flip()
-        
+
     def displayScore(self,x=5,y=5,c=(255,255,255)):
         self.drawText("Score: " + str(self.score),x,y,c)
-        
+
     def displayTime(self,x=0,y=0,c=(255,255,255)):
         self.drawText("Time: " + str(int(self.time)),x,y,c)
 
@@ -88,10 +88,10 @@ class Game(object):
 
     def stopMusic(self):
         pygame.mixer.music.stop()
-        
+
     def background(self,c):
         self.screen.fill(c)
-        
+
     def update(self,fps):
         self.fps = fps
         if self.time > 0:
@@ -106,23 +106,24 @@ class Game(object):
         self.keysPressed = pygame.key.get_pressed()
         keys.Pressed = pygame.key.get_pressed()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT: 
-                self.over = True 
+            if event.type == pygame.QUIT:
+                self.over = True
             if event.type == pygame.KEYDOWN:
                 keys.Down = event.key
             else:
                 keys.Down = None
-				
+
             if event.type == pygame.KEYUP:
                 keys.Up = event.key
             else:
                 keys.Up = None
-                
+
             pos = pygame.mouse.get_pos()
             mouse.x, mouse.y = pos
             button = pygame.mouse.get_pressed()
             mouse.LeftButton = button[0]
             mouse.RightButton = button[2]
+            pygame.mouse.set_visible(mouse.visible)
             if joy.connected:
                     padx,pady = joy.joystick.get_hat(0)
                     joy.pad = [0 for x in range(9)]
@@ -134,16 +135,16 @@ class Game(object):
 
                     for x in range(len(joy.button)):
                             joy.button[x] = joy.joystick.get_button(x)
-            
+
     def wait(self,key):
         while True:
             self.processInput()
             if self.keysPressed[key]:
                 return
-            
+
     def quit(self):
         pygame.quit()
-        
+
 class Image(object):
     def __init__(self,path,game):
         self.game = game
@@ -161,11 +162,11 @@ class Image(object):
         self.visible = True
         self.health = 100
         self.damage = 0
-        
+
     def setImage(self,image):
         self.image = image
         self.original = image
-        
+
     def collidedWith(self,obj,shape="circle"):
         if obj.visible and self.visible:
             if obj == "mouse":
@@ -196,7 +197,7 @@ class Image(object):
            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
         self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
         self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
-            
+
     def move(self, bounce = False):
         if bounce:
             if self.left < self.game.left or self.right > self.game.right:
@@ -207,7 +208,7 @@ class Image(object):
         self.x += self.dx * self.dxsign
         self.y += self.dy * self.dysign
         self.draw()
-        
+
     def changeXSpeed(self,dx = -999):
         if dx == -999:
             self.dxsign = -self.dxsign
@@ -218,7 +219,7 @@ class Image(object):
             self.dysign = -self.dysign
         else:
             self.dy = dy
-            
+
     def forward(self,speed):
         self.speed = speed
         self.calculateSpeedDeltas()
@@ -237,7 +238,7 @@ class Image(object):
         if angle == -999:
             angle = math.degrees(self.angle)
         self.angle, self.speed = math.radians(angle), speed
-        self.calculateSpeedDeltas()     
+        self.calculateSpeedDeltas()
     def calculateSpeedDeltas(self):
         self.dx = self.speed * math.sin(self.angle - math.pi)
         self.dy = self.speed * math.cos(self.angle - math.pi)
@@ -245,7 +246,7 @@ class Image(object):
         if visibility == -999:
             visibility = not self.visible
         self.visible = visibility
-        
+
     def moveX(self,a):
         self.x = self.x + a
     def moveY(self,a):
@@ -260,7 +261,14 @@ class Image(object):
         self.original = pygame.transform.scale(self.src,(self.original_width,self.original_height))
         self.image = pygame.transform.rotate(self.original,self.angle * 180 / math.pi)
         self.width,self.height = self.image.get_width(),self.image.get_height()
-        
+    def resizeBy(self,pct):
+        factor = 1 + pct / 100
+        self.original_width, self.original_height = int(self.original_width * factor), int(self.original_height * factor)
+        self.oldwidth,self.oldheight = self.original_width, self.original_height
+        self.original = pygame.transform.scale(self.src,(self.original_width,self.original_height))
+        self.image = pygame.transform.rotate(self.original,self.angle * 180 / math.pi)
+        self.width,self.height = self.image.get_width(),self.image.get_height()
+
     def isOffScreen(self):
        return self.right < self.game.left or self.left > self.game.right or self.top > self.game.bottom or self.bottom < self.game.top
 
@@ -281,7 +289,7 @@ class Animation(Image):
             for i in range(sequence):
                 self.images.append(pygame.image.load(path + str(i+1) + ".gif").convert_alpha())
                 self.source.append(self.images[i])
-        else:      
+        else:
             self.sheet = pygame.image.load(path).convert_alpha()
             pygame.image.save(self.sheet.subsurface((0,0,width,height)),"tmp.png")
             Image.__init__(self,"tmp.png",game)
@@ -310,8 +318,8 @@ class Animation(Image):
     def prevFrame(self):
         self.f -= 1
         if self.f < 0:
-            self.f = len(self.images)-1	
-        self.draw()	
+            self.f = len(self.images)-1
+        self.draw()
     def draw(self, loop = True):
         if self.visible:
             Image.setImage(self, self.images[self.f])
@@ -325,7 +333,7 @@ class Animation(Image):
                 self.visible = False
     def rotateBy(self,angle=0,direction="right"):
         Image.rotateBy(self,angle,direction)
-        return	
+        return
     def resizeTo(self,w,h):
         self.width, self.height = w, h
         for i in range(len(self.images)):
