@@ -168,7 +168,7 @@ class Image(object):
         self.original = image
 
     def collidedWith(self,obj,shape="circle"):
-        if obj.visible and self.visible:
+        if (obj.visible or "mouse") and self.visible:
             if obj == "mouse":
                 dx = self.x - self.game.mouseX
                 dy = self.y - self.game.mouseY
