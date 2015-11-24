@@ -1,4 +1,4 @@
-import pygame,math
+import pygame,math,os
 from pygame.locals import *
 from math import *
 from random import randint
@@ -265,8 +265,19 @@ class Image(object):
         factor = 1 + pct / 100
         self.resizeTo(int(self.original_width * factor), int(self.original_height * factor))
 
-    def isOffScreen(self):
-       return self.right < self.game.left or self.left > self.game.right or self.top > self.game.bottom or self.bottom < self.game.top
+    def isOffScreen(self,side="all"):
+        offscreen = False
+        if side=="all":
+                offscreen = self.right < self.game.left or self.left > self.game.right or self.top > self.game.bottom or self.bottom < self.game.top
+        elif side == "bottom":
+                offscreen = self.top > self.game.bottom
+        elif side == "top":
+                offscreen = self.bottom < self.game.top
+        elif side == "left":
+                offscreen = self.right < self.game.left
+        elif side == "right":
+                offscreen = self.left > self.game.right	
+        return offscreen
 
     def getAngle(self,angle="deg"):
         if angle == "deg":
@@ -287,6 +298,7 @@ class Animation(Image):
                 self.source.append(self.images[i])
         else:
             self.sheet = pygame.image.load(path).convert_alpha()
+            os.remove("tmp.png")
             pygame.image.save(self.sheet.subsurface((0,0,width,height)),"tmp.png")
             Image.__init__(self,"tmp.png",game)
             self.frame_width, self.frame_height = width, height
@@ -320,6 +332,7 @@ class Animation(Image):
         if self.visible:
             Image.setImage(self, self.images[self.f])
             Image.draw(self)
+            self.ftick += 1
             if self.ftick % self.frate == 0 and self.playAnim:
                 self.f += 1
                 self.ftick = 0
