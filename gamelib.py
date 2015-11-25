@@ -1,4 +1,4 @@
-import pygame,math,os
+import pygame,math
 from pygame.locals import *
 from math import *
 from random import randint
@@ -148,7 +148,10 @@ class Game(object):
 class Image(object):
     def __init__(self,path,game):
         self.game = game
-        self.image = pygame.image.load(path).convert_alpha()
+        if not isinstance(path, str):
+                self.image = path
+        else:
+                self.image = pygame.image.load(path).convert_alpha()
         self.width,self.original_width,self.oldwidth = self.image.get_width(),self.image.get_width(),self.image.get_width()
         self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
         self.rect = None
@@ -298,9 +301,8 @@ class Animation(Image):
                 self.source.append(self.images[i])
         else:
             self.sheet = pygame.image.load(path).convert_alpha()
-            os.remove("tmp.png")
-            pygame.image.save(self.sheet.subsurface((0,0,width,height)),"tmp.png")
-            Image.__init__(self,"tmp.png",game)
+            tmp = self.sheet.subsurface((0,0,width,height))
+            Image.__init__(self,tmp,game)
             self.frame_width, self.frame_height = width, height
             self.frame_rect = 0,0,width,height
             try:
