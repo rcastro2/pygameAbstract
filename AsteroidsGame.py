@@ -11,7 +11,7 @@ explode.makeVisible(False)
 
 plasma = Animation("images\\plasmaball1\\plasmaball1 ",11,game)
 
-bk = Animation("images\\field ",5,game)
+bk = Animation("images\\field\\field ",5,game)
 
 game.viewMouse(False)
 

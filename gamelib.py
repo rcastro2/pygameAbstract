@@ -100,6 +100,7 @@ class Game(object):
         self.clock.tick(fps)
 
     def viewMouse(self,visibility):
+        mouse.visible = visibility
         pygame.mouse.set_visible(visibility)
 
     def processInput(self):
@@ -170,32 +171,27 @@ class Image(object):
         self.image = image
         self.original = image
 
-    def collidedWith(self,obj,shape="circle"):
-        if (obj.visible or "mouse") and self.visible:
-            if obj == "mouse":
-                dx = self.x - self.game.mouseX
-                dy = self.y - self.game.mouseY
-                d = sqrt(pow(dx,2) + pow(dy,2))
-                if d < self.width/3:
-                    return True
-            else:
-                if shape == "rectangular" and self.rect.colliderect(obj.rect):
-                    return True
+    def collidedWith(self,obj,shape="circle"):       
+        if obj.visible and self.visible:     
+            if shape =="circle":
                 dx = self.x - obj.x
                 dy = self.y - obj.y
                 d = sqrt(pow(dx,2) + pow(dy,2))
-                if d < self.width/3 + obj.width/3 and obj.visible:
-                    return True
+                if d < self.width/4 + obj.width/4 and obj.visible:
+                    return True 
+            elif shape == "rectangular" and self.rect.colliderect(obj.rect):
+                    return True              
         return False
 
     def draw(self):
-        if self.original_width != self.oldwidth or self.original_height != self.oldheight:
-            self.resizeTo(self.original_width,self.original_height)
+        if self.width != self.oldwidth or self.height != self.oldheight:
+            self.resizeTo(self.width,self.height)
         if self.rotate == "left" or self.rotate == "right":
             self.angle = self.angle + self.da
             self.image = self.original
             self.image = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
             self.width,self.height = self.image.get_width(),self.image.get_height()
+            self.oldwidth,self.oldheight = self.width,self.height
         if self.visible:
            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
         self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
@@ -226,14 +222,14 @@ class Image(object):
     def forward(self,speed):
         self.speed = speed
         self.calculateSpeedDeltas()
-        self.move()
+        #self.move()
     def rotateBy(self,angle=0,direction="right"):
         rad = angle * math.pi / 180
         self.rotate = direction
         if direction == "right":
             rad = -rad
         self.da = rad
-        self.move()
+        #self.move()
     def moveTo(self,x,y):
         self.x,self.y = x,y
         self.draw()
@@ -259,14 +255,13 @@ class Image(object):
         self.y = self.y + b
 
     def resizeTo(self,w,h):
-        self.original_width, self.original_height = int(w), int(h)
-        self.oldwidth,self.oldheight = int(w),int(h)
-        self.original = pygame.transform.scale(self.src,(self.original_width,self.original_height))
-        self.image = pygame.transform.rotate(self.original,self.angle * 180 / math.pi)
+        self.original = pygame.transform.scale(self.src,(int(w),int(h)))
+        self.image = self.original
         self.width,self.height = self.image.get_width(),self.image.get_height()
+        self.oldwidth,self.oldheight = self.width,self.height
     def resizeBy(self,pct):
-        factor = 1 + pct / 100
-        self.resizeTo(int(self.original_width * factor), int(self.original_height * factor))
+        factor = 1 + pct/100.0
+        self.resizeTo(int(self.width * factor), int(self.height * factor))
 
     def isOffScreen(self,side="all"):
         offscreen = False
@@ -350,5 +345,5 @@ class Animation(Image):
         for i in range(len(self.images)):
             self.images[i] = pygame.transform.scale(self.source[i],(self.width,self.height))
     def resizeBy(self,pct):
-        factor = 1 - pct / 100
+        factor = 1 + pct / 100.0
         self.resizeTo(self.width * factor, self.height * factor)

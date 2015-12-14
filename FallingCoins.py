@@ -3,7 +3,7 @@ from gamelib import *
 game = Game(800,600,"Falling Coins")
 
 #Animation via a collection of images
-bk = Animation("images\\field ",5,game,frate=3)
+bk = Animation("images\\field\\field ",5,game,frate=3)
 
 #Animation via a spritesheet
 one_ring = Animation("images\\ring.png",10,game,70,90,2)

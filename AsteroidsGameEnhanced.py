@@ -19,7 +19,7 @@ explode.makeVisible(False)
 plasma = Animation("images\\plasmaball1\\plasmaball1 ",11,game)
 plasma.makeVisible(False)
 
-bk = Animation("images\\field ",5,game)
+bk = Animation("images\\field\\field ",5,game)
 
 game.viewMouse(False)
 
@@ -31,15 +31,15 @@ while not game.over:
     explode.draw(False)
     
     if keys.Pressed[K_LEFT] or joy.pad[E]:
-        hero.rotateBy(3,"left")
+        hero.rotateBy(4,"left")
         asteroid.nextFrame()
     if keys.Pressed[K_RIGHT] or joy.pad[W]:
-        hero.rotateBy(3,"right")
+        hero.rotateBy(4,"right")
         asteroid.prevFrame()
     if not keys.Pressed[K_LEFT] and not keys.Pressed[K_RIGHT] and joy.pad[C]:
         hero.rotateBy(0,"still")
     if keys.Pressed[K_UP] or joy.button[4]:
-        hero.forward(4)
+        hero.forward(8)
         fly.play(4000)
     else:
         hero.forward(hero.speed *0.99)

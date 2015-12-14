@@ -10,7 +10,7 @@ cross = Image("images\\crosshair.png",game)
 bk = Image("images\\beach.jpg",game)
 bk.resizeTo(game.width, game.height)
 
-game.viewMouse(False)
+#game.viewMouse(False)
 
 #Game Loop
 while not game.over:
@@ -18,7 +18,8 @@ while not game.over:
         bk.draw()
         ball.move(True)
         cross.moveTo(mouse.x,mouse.y)
-        if mouse.LeftButton and ball.collidedWith(mouse):
+
+        if ball.collidedWith(mouse):
                 game.score += 10
                 x = randint(ball.width,game.width - ball.width)
                 y = randint(ball.height,game.height-ball.height)
@@ -29,8 +30,6 @@ while not game.over:
                         game.time += 5
                 elif choice == 2:
                         ball.resizeBy(-5)
-                        #ball.original_width -= 5
-                        #ball.original_height -= 5
 
         game.displayTime(200,0)
         game.displayScore(0,0)
