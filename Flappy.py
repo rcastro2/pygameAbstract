@@ -11,13 +11,25 @@ pipeTop = Image("images\\pipe_top.png",game)
 pipeTop.setSpeed(2,90)
 pipeBottom = Image("images\\pipe_bot.png",game)
 pipeBottom.setSpeed(2,90)
-y = randint(300,500)
+y = randint(300,480)
 pipeBottom.moveTo(game.width + 100, y)
-pipeTop.moveTo(game.width + 100, y - 400)
+pipeTop.moveTo(game.width + 100, y - 350)
 
 bird = Animation("images\\bird\\bird ",3,game)
 bar = Animation("images\\bar\\bar ",3,game)
-bar.moveTo(300,450)
+bar.moveTo(300,400)
+
+title = Image("images\\logo.png",game)
+endtitle = Image("images\\flappybird_end.png",game)
+ring = Animation("images\\ring2.png",64,game,64,64)
+ring.moveTo(35,410)
+
+bk1.draw()
+bar.draw()
+title.draw()
+game.update(1)
+game.drawText("Press [Space] to Start.",240,260,white,26,True)
+game.wait(K_SPACE)
 
 crossed = False
 while not game.over:
@@ -33,12 +45,12 @@ while not game.over:
     pipeTop.move()
     pipeBottom.move()
     bar.draw()
-    if bird.collidedWith(pipeTop,"rectangular") or bird.collidedWith(pipeBottom,"rectangular"):
+    ring.draw()
+    if bird.collidedWith(pipeTop,"rectangular") or bird.collidedWith(pipeBottom,"rectangular") or bird.collidedWith(bar,"rectangular"):
         game.over = True
+        endtitle.draw()
     if keys.Pressed[K_SPACE] :
         bird.y -= 3
-    if bird.collidedWith(bar,"rectangular"):
-        game.over = True
 
     if bk1.x + bk1.width/2 < 0:
         bk1.moveTo(bk2.x + bk2.width,bk2.y)
@@ -52,13 +64,14 @@ while not game.over:
     if pipeBottom.right < 0:
         y = randint(300,500)
         pipeBottom.moveTo(game.width + 100, y)
-        pipeTop.moveTo(game.width + 100, y - 400)
+        pipeTop.moveTo(game.width + 100, y - 350)
         pipeTop.speed += 1
         pipeBottom.speed += 1
         crossed = False
-    game.displayScore()
+    game.drawText(" x " + str(game.score),70,400,black,36)
     game.update(30)
-game.quit()
 
-game.over = True
+game.drawText("Press [Enter] to Exit.",240,400,black,36,True)
+game.wait(K_RETURN)
+game.quit()
 

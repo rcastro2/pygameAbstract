@@ -67,8 +67,8 @@ class Game(object):
         self.left, self.top, self.right, self.bottom = 0,0,w,h
         self.over, self.score = False,0
 
-    def drawText(self,msg,x,y,c=(255,255,255),update=False):
-        font = pygame.font.Font(None,24)
+    def drawText(self,msg,x,y,c=(255,255,255),size=24,update=False):
+        font = pygame.font.Font(None,size)
         text = font.render(str(msg),True,c)
         self.screen.blit(text,[x,y])
         if update:
