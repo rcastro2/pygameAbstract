@@ -29,8 +29,8 @@ endtitle = Image("images\\flappybird_end.png",game)
 bk.draw()
 bar.draw()
 title.draw()
+game.drawText("Press [Space] to Start.",237,280,white,26,shadow=True)
 game.update(1)
-game.drawText("Press [Space] to Start.",237,280,white,26,True)
 game.wait(K_SPACE)
 
 crossed = False

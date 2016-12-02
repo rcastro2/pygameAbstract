@@ -116,10 +116,16 @@ class Game(object):
                          
             self.background.moveTo(self.backgroundXY[i]["x"],self.backgroundXY[i]["y"])
 
-    def drawText(self,msg,x,y,c=(255,255,255),size=24,update=False):
-        font = pygame.font.Font(None,size)
+    def drawText(self,msg,x,y,c=(255,255,255),size=24,family = None, shadow = False, update=False):
+        if family != None:
+             family = pygame.font.match_font(family)
+        font = pygame.font.Font(family,size)
+        if shadow:
+             text = font.render(str(msg),True,(0,0,0))
+             self.screen.blit(text,[x+1,y+1]) 
         text = font.render(str(msg),True,c)
         self.screen.blit(text,[x,y])
+        
         if update:
              pygame.display.flip()
 
