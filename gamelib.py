@@ -14,7 +14,7 @@ N,NE,E,SE,S,SW,W,NW,C = 0,1,2,3,4,5,6,7,8
 
 class Mouse(object):
 	def __init__(self):
-		self.x, self.y, self.width, self.height, self.LeftButton, self.RigthButton, self.visible = 0, 0, 0, 0, None, None, True
+		self.x, self.y, self.width, self.height, self.LeftButton, self.RigthButton, self.visible, self.name = 0, 0, 0, 0, None, None, True, "mouse"
 
 class KeyBoard(object):
 	def __init__(self):
@@ -62,10 +62,59 @@ class Game(object):
     def __init__(self,w,h,title,time=0):
         self.width,self.height = w,h
         pygame.display.set_caption(title)
-        self.screen = pygame.display.set_mode([w,h]);
+        self.screen = pygame.display.set_mode([w,h])
+        self.background,self.backgroundXY, self.backgroundXYSet = None, [],False
         self.fps, self.time, self.clock = 20, time + 1, pygame.time.Clock()
         self.left, self.top, self.right, self.bottom = 0,0,w,h
         self.over, self.score = False,0
+
+    def setBackground(self,bkGraphics):
+        self.background = bkGraphics
+        self.backgroundXY = []
+        self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
+        self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
+
+    def drawBackground(self):
+        self.background.draw(self.background.x, this.background.y)
+
+    def scrollBackground(self,direction,amt):        
+        if not self.backgroundXYSet:
+            if direction == "left" or direction == "right":
+                self.backgroundXY[1]["x"] = self.backgroundXY[0]["x"] + self.background.width 
+            elif direction == "up" or direction == "down":
+                self.backgroundXY[1]["y"] = self.backgroundXY[0]["y"] + self.background.height 
+            self.backgroundXYSet = True
+    
+        for i in range(len(self.backgroundXY)):
+            if direction == "left":
+                self.backgroundXY[i]["x"] -= amt
+                if self.backgroundXY[0]["x"] + self.background.width  / 2 <= 0:
+                    self.backgroundXY[0]["x"] = self.backgroundXY[1]["x"] + self.background.width            
+                if self.backgroundXY[1]["x"] + self.background.width  / 2 <= 0:
+                    self.backgroundXY[1]["x"]  = self.backgroundXY[0]["x"] + self.background.width
+                         
+            elif direction == "right":
+                self.backgroundXY[i]["x"] += amt
+                if self.backgroundXY[0]["x"] - self.background.width  / 2 >= self.width:
+                    self.backgroundXY[0]["x"] = self.backgroundXY[1]["x"] - self.background.width 
+                if self.backgroundXY[1]["x"] - self.background.width  / 2 >= self.width:
+                    self.backgroundXY[1]["x"]  = self.backgroundXY[0]["x"] - self.background.width  
+            
+            elif  direction == "up":
+                self.backgroundXY[i]["y"] -= amt
+                if self.backgroundXY[0]["y"] + self.background.height  / 2 <= 0:
+                    self.backgroundXY[0]["y"] = self.backgroundXY[1]["y"] + self.background.height 
+                if self.backgroundXY[1]["y"] + self.background.height  / 2 <= 0:
+                    self.backgroundXY[1]["y"]  = self.backgroundXY[0]["y"] + self.background.height
+                         
+            elif  direction == "down":
+                self.backgroundXY[i]["y"] += amt
+                if self.backgroundXY[0]["y"] - self.background.height  / 2 >= self.height:
+                    self.backgroundXY[0]["y"] = self.backgroundXY[1]["y"] - self.background.height 
+                if self.backgroundXY[1]["y"] - self.background.height  / 2 >= self.height:
+                    self.backgroundXY[1]["y"]  = self.backgroundXY[0]["y"] - self.background.height
+                         
+            self.background.moveTo(self.backgroundXY[i]["x"],self.backgroundXY[i]["y"])
 
     def drawText(self,msg,x,y,c=(255,255,255),size=24,update=False):
         font = pygame.font.Font(None,size)
@@ -171,13 +220,13 @@ class Image(object):
         self.image = image
         self.original = image
 
-    def collidedWith(self,obj,shape="circle"):       
-        if obj.visible and self.visible:     
+    def collidedWith(self,obj,shape="circle"):
+        if (obj.visible or isinstance(obj,Mouse)) and self.visible:     
             if shape =="circle":
                 dx = self.x - obj.x
                 dy = self.y - obj.y
                 d = sqrt(pow(dx,2) + pow(dy,2))
-                if d < self.width/4 + obj.width/4 and obj.visible:
+                if d < self.width/4 + obj.width/4:
                     return True 
             elif shape == "rectangular" and self.rect.colliderect(obj.rect):
                     return True              

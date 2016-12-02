@@ -4,7 +4,7 @@ game = Game(800,600,"Zombie Attack!",60)
 bk  = Image("images\\Zbk.jpg",game)
 bk.resizeTo(800,600)
 zombie = Image("images\\zombie.png",game)
-zombie.resizeTo(150,150)
+zombie.resizeBy(-80)
 zombie.setSpeed(4,60)
 turkey = Image("images\\turkey.gif",game)
 turkey.resizeBy(-50)
@@ -14,6 +14,7 @@ chomp = Sound("sound\\ZombieChomp.wav",2)
 gobble = Sound("sound\\TurkeyGooble.wav",3)
 die = Sound("sound\\ZombieDie.wav",4)
 scope = Image("images\\crosshair.png",game)
+mouse.visible = False
 
 while not game.over:
     game.processInput()
@@ -60,5 +61,5 @@ while not game.over:
         game.over = True
     game.displayTime(150,5)
     game.displayScore()
-    game.update(20)
+    game.update(30)
 game.quit()
