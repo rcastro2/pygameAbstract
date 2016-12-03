@@ -62,10 +62,10 @@ while not game.over:
         pipeTop.speed += 1
         pipeBottom.speed += 1
         crossed = False
-    game.drawText(" x " + str(game.score),70,420,black,36)
+    game.drawText(" x " + str(game.score),70,420,black,size=36)
     game.update(30)
 
-game.drawText("Press [Enter] to Exit.",240,400,black,36,True)
+game.drawText("Press [Enter] to Exit.",240,400,black,size=36,update=True)
 game.wait(K_RETURN)
 game.quit()
 

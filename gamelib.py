@@ -398,7 +398,7 @@ class Animation(Image):
     def resizeTo(self,w,h):
         self.width, self.height = w, h
         for i in range(len(self.images)):
-            self.images[i] = pygame.transform.scale(self.source[i],(self.width,self.height))
+            self.images[i] = pygame.transform.scale(self.source[i],(int(self.width),int(self.height)))
     def resizeBy(self,pct):
         factor = 1 + pct / 100.0
         self.resizeTo(self.width * factor, self.height * factor)
