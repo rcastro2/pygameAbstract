@@ -48,6 +48,17 @@ keys = KeyBoard()
 mouse = Mouse()
 joy = Joystick()
 
+class Font(object):
+    def __init__(self, color = white, size = 24, shadowColor = None, family = None):
+        self.color, self.size, self.shadowColor = color, size, shadowColor
+        if family != None:
+                self.setFont(family)
+        else:
+                self.family = None
+        
+    def setFont(newFont):
+        self.family = pygame.font.match_font(newFont)
+
 class Sound(object):
     def __init__(self,path,chan):
         self.chan = chan
@@ -67,6 +78,7 @@ class Game(object):
         self.fps, self.time, self.clock = 20, time + 1, pygame.time.Clock()
         self.left, self.top, self.right, self.bottom = 0,0,w,h
         self.over, self.score = False,0
+        self.font = Font()
 
     def setBackground(self,bkGraphics):
         self.background = bkGraphics
@@ -116,24 +128,21 @@ class Game(object):
                          
             self.background.moveTo(self.backgroundXY[i]["x"],self.backgroundXY[i]["y"])
 
-    def drawText(self,msg,x,y,c=(255,255,255),size=24,family = None, shadow = False, update=False):
-        if family != None:
-             family = pygame.font.match_font(family)
-        font = pygame.font.Font(family,size)
-        if shadow:
-             text = font.render(str(msg),True,(0,0,0))
+    def drawText(self,msg,x,y,newFont = None):
+        if newFont == None:
+             newFont = self.font
+        textfont = pygame.font.Font(newFont.family,newFont.size)
+        if newFont.shadowColor != None:
+             text = textfont.render(str(msg),True,newFont.shadowColor)
              self.screen.blit(text,[x+1,y+1]) 
-        text = font.render(str(msg),True,c)
+        text = textfont.render(str(msg),True,newFont.color)
         self.screen.blit(text,[x,y])
-        
-        if update:
-             pygame.display.flip()
 
-    def displayScore(self,x=5,y=5,c=(255,255,255)):
-        self.drawText("Score: " + str(self.score),x,y,c)
+    def displayScore(self,x=5,y=5,newFont = None):
+        self.drawText("Score: " + str(self.score),x,y, newFont)
 
-    def displayTime(self,x=0,y=0,c=(255,255,255)):
-        self.drawText("Time: " + str(int(self.time)),x,y,c)
+    def displayTime(self,x=0,y=0,newFont = None):
+        self.drawText("Time: " + str(int(self.time)),x,y,newFont)
 
     def setMusic(self,path):
         pygame.mixer.music.load(path)
@@ -147,7 +156,7 @@ class Game(object):
     def background(self,c):
         self.screen.fill(c)
 
-    def update(self,fps):
+    def update(self,fps=1):
         self.fps = fps
         if self.time > 0:
             self.time -= 1/fps

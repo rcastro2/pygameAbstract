@@ -29,9 +29,12 @@ endtitle = Image("images\\flappybird_end.png",game)
 bk.draw()
 bar.draw()
 title.draw()
-game.drawText("Press [Space] to Start.",237,280,white,26,shadow=True)
+game.font.shadowColor = black
+game.drawText("Press [Space] to Start.",237,280)
 game.update(1)
 game.wait(K_SPACE)
+
+scoreFont = Font(black,36)
 
 crossed = False
 while not game.over:
@@ -62,10 +65,11 @@ while not game.over:
         pipeTop.speed += 1
         pipeBottom.speed += 1
         crossed = False
-    game.drawText(" x " + str(game.score),70,420,black,size=36)
+    game.drawText(" x " + str(game.score),70,420, scoreFont)
     game.update(30)
 
-game.drawText("Press [Enter] to Exit.",240,400,black,size=36,update=True)
+game.drawText("Press [Enter] to Exit.",200,400, Font(black,40,green))
+game.update()
 game.wait(K_RETURN)
 game.quit()
 
