@@ -87,7 +87,7 @@ class Game(object):
         self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
 
     def drawBackground(self):
-        self.background.draw(self.background.x, this.background.y)
+        self.background.draw()
 
     def scrollBackground(self,direction,amt):        
         if not self.backgroundXYSet:
@@ -250,7 +250,7 @@ class Image(object):
     def draw(self):
         if self.width != self.oldwidth or self.height != self.oldheight:
             self.resizeTo(self.width,self.height)
-        if self.rotate == "left" or self.rotate == "right":
+        if self.rotate == "left" or self.rotate == "right" or self.rotate == "to":
             self.angle = self.angle + self.da
             self.image = self.original
             self.image = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
@@ -297,6 +297,20 @@ class Image(object):
     def moveTo(self,x,y):
         self.x,self.y = x,y
         self.draw()
+    def moveTowards(self,obj,speed):
+        self.setSpeed(speed,self.angleTo(obj))
+        self.move()
+    def rotateTowards(self,obj):
+        self.angle = (self.angleTo(obj) + 90) * math.pi / 180
+        self.rotate = "to"
+        #self.draw()
+    def angleTo(self,obj):
+        dx = obj.x - self.x
+        dy = obj.y - self.y
+        angle = math.atan(dx/dy) * 180 / math.pi
+        if dy > 0:
+            angle += 180
+        return angle
     def setSpeed(self,speed,angle=-999):
         if angle == -999:
             angle = math.degrees(self.angle)
