@@ -225,7 +225,7 @@ class Image(object):
         self.x, self.y, self.dx, self.dy, self.dxsign, self.dysign = self.game.width/2,self.game.height/2,0,0,1,1
         self.left, self.top, self.right, self.bottom = 0,0,0,0
         self.bounce = False
-        self.rotate = "still"
+        self.rotate,self.rotate_angle, self.rda = "still",0,0
         self.speed = 0
         self.visible = True
         self.health = 100
@@ -251,9 +251,9 @@ class Image(object):
         if self.width != self.oldwidth or self.height != self.oldheight:
             self.resizeTo(self.width,self.height)
         if self.rotate == "left" or self.rotate == "right" or self.rotate == "to":
-            self.angle = self.angle + self.da
+            self.rotate_angle = self.rotate_angle + self.rda
             self.image = self.original
-            self.image = pygame.transform.rotate(self.image,self.angle * 180 / math.pi)
+            self.image = pygame.transform.rotate(self.image,self.rotate_angle * 180 / math.pi)
             self.width,self.height = self.image.get_width(),self.image.get_height()
             self.oldwidth,self.oldheight = self.width,self.height
         if self.visible:
@@ -292,7 +292,7 @@ class Image(object):
         self.rotate = direction
         if direction == "right":
             rad = -rad
-        self.da = rad
+        self.rda = rad
         #self.move()
     def moveTo(self,x,y):
         self.x,self.y = x,y
@@ -301,12 +301,14 @@ class Image(object):
         self.setSpeed(speed,self.angleTo(obj))
         self.move()
     def rotateTowards(self,obj):
-        self.angle = (self.angleTo(obj) + 90) * math.pi / 180
+        self.rotate_angle = (self.angleTo(obj) + 90) * math.pi / 180
         self.rotate = "to"
         #self.draw()
     def angleTo(self,obj):
         dx = obj.x - self.x
         dy = obj.y - self.y
+        if dy == 0: #avoid division by zero
+            dy = 0.00001
         angle = math.atan(dx/dy) * 180 / math.pi
         if dy > 0:
             angle += 180
