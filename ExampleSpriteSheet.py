@@ -10,9 +10,9 @@ game.viewMouse(False)
 
 while not game.over:
     game.processInput()
-    game.background(black)
+    game.drawBackground(black)
     spider.move(True)
-    spider.rotateBy(2)
+    spider.rotateBy(1)
     game.update(24)
 
 game.quit()

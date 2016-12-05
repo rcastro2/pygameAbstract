@@ -86,8 +86,13 @@ class Game(object):
         self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
         self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
 
-    def drawBackground(self):
-        self.background.draw()
+    def drawBackground(self,color=None):
+        if color == None and self.background != None:
+            self.background.draw()
+        elif color != None:
+            self.screen.fill(color)
+        else:
+            self.screen.fill(black)
 
     def scrollBackground(self,direction,amt):        
         if not self.backgroundXYSet:
