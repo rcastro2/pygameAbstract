@@ -8,7 +8,7 @@ locations = []
 
 while not game.over:
     game.processInput()
-    game.background(black)
+    game.drawBackground(black)
 
     alien.move()
     plasma.draw()

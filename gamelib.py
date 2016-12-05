@@ -256,7 +256,6 @@ class Image(object):
         if self.width != self.oldwidth or self.height != self.oldheight:
             self.resizeTo(self.width,self.height)
         if self.rotate == "left" or self.rotate == "right" or self.rotate == "to":
-            self.rotate_angle = self.rotate_angle + self.rda
             self.image = self.original
             self.image = pygame.transform.rotate(self.image,self.rotate_angle * 180 / math.pi)
             self.width,self.height = self.image.get_width(),self.image.get_height()
@@ -297,7 +296,8 @@ class Image(object):
         self.rotate = direction
         if direction == "right":
             rad = -rad
-        self.rda = rad
+        self.rotate_angle = self.rotate_angle + rad
+        self.angle = self.angle + rad
         #self.move()
     def moveTo(self,x,y):
         self.x,self.y = x,y
@@ -320,7 +320,7 @@ class Image(object):
         return angle
     def setSpeed(self,speed,angle=-999):
         if angle == -999:
-            angle = math.degrees(self.angle)
+            angle = math.degrees(self.angle) 
         self.angle, self.speed = math.radians(angle), speed
         self.calculateSpeedDeltas()
     def calculateSpeedDeltas(self):
