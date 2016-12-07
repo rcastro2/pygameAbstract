@@ -42,6 +42,7 @@ while not game.over:
     game.scrollBackground("left",2)
 
     bird.draw()
+    bird.rotateTo(-10)
     bird.y += 2
     
     pipeTop.move()
@@ -53,6 +54,7 @@ while not game.over:
         endtitle.draw()
     if keys.Pressed[K_SPACE] :
         bird.y -= 5
+        bird.rotateTo(10)    
 
     if bird.left > pipeTop.right and not crossed:
         crossed = True

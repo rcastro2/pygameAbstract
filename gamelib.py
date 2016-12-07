@@ -309,6 +309,10 @@ class Image(object):
         self.rotate_angle = (self.angleTo(obj) + 90) * math.pi / 180
         self.rotate = "to"
         #self.draw()
+    def rotateTo(self,angle):
+        self.rotate = "left"
+        self.rotate_angle = angle * math.pi / 180
+        self.angle = angle * math.pi / 180
     def angleTo(self,obj):
         dx = obj.x - self.x
         dy = obj.y - self.y
