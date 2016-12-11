@@ -80,19 +80,17 @@ class Game(object):
         self.over, self.score = False,0
         self.font = Font()
 
+    def clearBackground(self,color=(0,0,0)):
+        self.screen.fill(color)
+        
     def setBackground(self,bkGraphics):
         self.background = bkGraphics
         self.backgroundXY = []
         self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
         self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
 
-    def drawBackground(self,color=None):
-        if color == None and self.background != None:
-            self.background.draw()
-        elif color != None:
-            self.screen.fill(color)
-        else:
-            self.screen.fill(black)
+    def drawBackground(self):
+        self.background.draw()
 
     def scrollBackground(self,direction,amt):        
         if not self.backgroundXYSet:
@@ -157,9 +155,6 @@ class Game(object):
 
     def stopMusic(self):
         pygame.mixer.music.stop()
-
-    def background(self,c):
-        self.screen.fill(c)
 
     def update(self,fps=1):
         self.fps = fps
@@ -248,7 +243,7 @@ class Image(object):
                 d = sqrt(pow(dx,2) + pow(dy,2))
                 if d < self.width/4 + obj.width/4:
                     return True 
-            elif shape == "rectangular" and self.rect.colliderect(obj.rect):
+            elif shape == "rectangle" and self.rect.colliderect(obj.rect):
                     return True              
         return False
 

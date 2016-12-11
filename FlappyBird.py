@@ -15,13 +15,17 @@ bar.moveTo(game.width/2,game.height-50)
 ring = Animation("images\\ring2.png",64,game,64,64)
 ring.moveTo(35,430)
 
+ring2 = Animation("images\\ring2.png",64,game,64,64)
+ring2.setSpeed(2,90)
 pipeTop = Image("images\\pipe_top.png",game)
 pipeTop.setSpeed(2,90)
 pipeBottom = Image("images\\pipe_bot.png",game)
 pipeBottom.setSpeed(2,90)
-y = randint(300,450)
-pipeBottom.moveTo(game.width + 100, y)
-pipeTop.moveTo(game.width + 100, y - 350)
+
+y = randint(200,300)
+ring2.moveTo(game.width + 100,y)
+pipeBottom.moveTo(game.width + 100, y + 175)
+pipeTop.moveTo(game.width + 100, y - 175)
 
 title = Image("images\\logo.png",game)
 endtitle = Image("images\\flappybird_end.png",game)
@@ -36,7 +40,6 @@ game.wait(K_SPACE)
 
 scoreFont = Font(black,36)
 
-crossed = False
 while not game.over:
     game.processInput()
     game.scrollBackground("left",2)
@@ -47,26 +50,32 @@ while not game.over:
     
     pipeTop.move()
     pipeBottom.move()
+    ring2.move()
     bar.draw()
     ring.draw()
-    if bird.collidedWith(pipeTop,"rectangular") or bird.collidedWith(pipeBottom,"rectangular") or bird.collidedWith(bar,"rectangular"):
+    
+    if bird.collidedWith(pipeTop,"rectangle") or bird.collidedWith(pipeBottom,"rectangle") or bird.collidedWith(bar,"rectangle"):
         game.over = True
         endtitle.draw()
+        
     if keys.Pressed[K_SPACE] :
         bird.y -= 5
         bird.rotateTo(10)    
 
-    if bird.left > pipeTop.right and not crossed:
-        crossed = True
+    if bird.collidedWith(ring2):
         game.score += 1
-
-    if pipeBottom.right < 0:
-        y = randint(300,500)
-        pipeBottom.moveTo(game.width + 100, y)
-        pipeTop.moveTo(game.width + 100, y - 350)
+        ring2.visible = False
+ 
+    if pipeBottom.isOffScreen("left"):
+        y = randint(200,300)
+        ring2.moveTo(game.width + 100,y)
+        pipeBottom.moveTo(game.width + 100, y + 175)
+        pipeTop.moveTo(game.width + 100, y - 175)
         pipeTop.speed += 1
         pipeBottom.speed += 1
-        crossed = False
+        ring2.speed +=1
+        ring2.visible = True
+
     game.drawText(" x " + str(game.score),70,420, scoreFont)
     game.update(30)
 

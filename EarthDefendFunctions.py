@@ -4,7 +4,7 @@ def positionAsteroids(asteroids,earth,game):
     for a in asteroids:
         x = randint(10,game.width*10)
         y = randint(10,game.height*10)
-        speed = randint(2,5)
+        speed = randint(1,3)
         chance = randint(0,8)
 
         if chance == 0:
@@ -24,9 +24,4 @@ def positionAsteroids(asteroids,earth,game):
         else:
             a.moveTo(-x,game.height + y)
      
-        dx = earth.x - a.x
-        dy = earth.y - a.y
-        angle = math.atan(dx/dy) * 180 / math.pi
-        if dy > 0:
-            angle += 180
-        a.setSpeed(speed,angle)
+        a.moveTowards(earth,speed)
