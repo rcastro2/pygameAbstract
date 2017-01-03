@@ -51,12 +51,15 @@ joy = Joystick()
 class Font(object):
     def __init__(self, color = white, size = 24, shadowColor = None, family = None):
         self.color, self.size, self.shadowColor = color, size, shadowColor
-        if family != None:
-                self.setFont(family)
+
+        if family != None and family[-3:] == "ttf":
+                self.family = family              
+        elif family != None:
+                self.findFont(family)
         else:
                 self.family = None
         
-    def setFont(newFont):
+    def findFont(self,newFont):
         self.family = pygame.font.match_font(newFont)
 
 class Sound(object):
