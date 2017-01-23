@@ -137,7 +137,11 @@ class Game(object):
     def drawText(self,msg,x,y,newFont = None):
         if newFont == None:
              newFont = self.font
-        textfont = pygame.font.Font(newFont.family,newFont.size)
+        try:
+             textfont = pygame.font.Font(newFont.family,newFont.size)
+        except:
+             textfont = pygame.font.Font(pygame.font.match_font("arial"),24)
+             
         if newFont.shadowColor != None:
              text = textfont.render(str(msg),True,newFont.shadowColor)
              self.screen.blit(text,[x+1,y+1]) 
@@ -214,12 +218,18 @@ class Game(object):
         pygame.quit()
 
 class Image(object):
-    def __init__(self,path,game):
+    def __init__(self,path,game,use_alpha=True):
         self.game = game
         if not isinstance(path, str):
                 self.image = path
         else:
-                self.image = pygame.image.load(path).convert_alpha()
+                if use_alpha:
+                        self.image = pygame.image.load(path).convert_alpha()
+                else:
+                        self.image = pygame.image.load(path).convert()
+                        trans_color = self.image.get_at((0,0))
+                        self.image.set_colorkey(trans_color)
+                        
         self.width,self.original_width,self.oldwidth = self.image.get_width(),self.image.get_width(),self.image.get_width()
         self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
         self.rect = None
