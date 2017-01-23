@@ -380,7 +380,7 @@ class Image(object):
         return self.angle
 
 class Animation(Image):
-    def __init__(self,path,sequence,game, width = 0, height = 0,frate = 1):
+    def __init__(self,path,sequence,game, width = 0, height = 0,frate = 1,use_alpha=True):
         self.f, self.frate, self.ftick = 0,frate,0
         self.game = game
         self.playAnim = True
@@ -392,7 +392,13 @@ class Animation(Image):
                 self.images.append(pygame.image.load(path + str(i+1) + ".gif").convert_alpha())
                 self.source.append(self.images[i])
         else:
-            self.sheet = pygame.image.load(path).convert_alpha()
+            if use_alpha:
+                self.sheet = pygame.image.load(path).convert_alpha()
+            else:
+                self.sheet = pygame.image.load(path).convert()
+                trans_color = self.sheet.get_at((0,0))
+                self.sheet.set_colorkey(trans_color)
+                
             tmp = self.sheet.subsurface((0,0,width,height))
             Image.__init__(self,tmp,game)
             self.frame_width, self.frame_height = width, height
