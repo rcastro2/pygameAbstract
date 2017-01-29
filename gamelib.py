@@ -381,7 +381,7 @@ class Image(object):
 
 class Animation(Image):
     def __init__(self,path,sequence,game, width = 0, height = 0,frate = 1,use_alpha=True):
-        self.f, self.frate, self.ftick = 0,frate,0
+        self.f, self.frate, self.ftick, self.loop, self.once = 0,frate,0,True,True
         self.game = game
         self.playAnim = True
         self.images = []
@@ -436,10 +436,12 @@ class Animation(Image):
             if self.ftick % self.frate == 0 and self.playAnim:
                 self.f += 1
                 self.ftick = 0
+            if not loop and self.f == len(self.images)-1:
+                self.visible = False
             if self.f > len(self.images)-1:
                 self.f = 0
-            if not loop and self.f == 0:
-                self.visible = False
+                self.ftick = 0
+            
     def rotateBy(self,angle=0,direction="right"):
         Image.rotateBy(self,angle,direction)
         return
