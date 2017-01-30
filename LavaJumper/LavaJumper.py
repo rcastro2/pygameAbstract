@@ -31,7 +31,7 @@ def intro():
 
     hsemblem.moveTo(game.width - hsemblem.width / 2 - 40, game.height - hsemblem.height / 2 - 40)
     infoemblem.moveTo(infoemblem.width / 2 + 40, game.height - infoemblem.height / 2 - 40)
-    game.time = 3
+    game.time = 1
     while not game.over:
         game.processInput()
 
@@ -40,6 +40,7 @@ def intro():
         titleB.draw()
         hsemblem.draw()
         infoemblem.draw()
+        
         
         if game.time <= 0:
             game.drawText("Press [SPACE] to Start",game.width/2-175,game.height / 2 + 30,Font(black,32,red,'mael.ttf'))
@@ -119,7 +120,7 @@ def about():
     abouttitle = Image("images\\about.png",game)
     abouttitle.y = 50
     global last
-    game.time = 2
+    game.time = 1
     while not game.over:
         game.processInput()
 
@@ -136,7 +137,12 @@ def about():
             game.drawText("Return",game.width / 2 - returnemblem.width / 2 + 15, game.height - returnemblem.height / 2 + 10 ,Font(black,20,c,'mael.ttf'))
             returnemblem.draw()
         
-        pointer.moveTo(mouse.x + pointer.width /2 - 10,mouse.y + pointer.height/2 - 10)     
+        pointer.moveTo(mouse.x + pointer.width /2 - 10,mouse.y + pointer.height/2 - 10)
+        textFont = Font(black,24,red,'mael.ttf')
+        game.drawText("Help Glitch escape the volcano by jumping across",100,120,textFont)
+        game.drawText("the floating platforms to the teleportation rune.",100,160,textFont)
+        game.drawText("Be wary of the various perils that challenge your escape.",100,200,textFont)
+        game.drawText("Use the arrow keys to move and the spacebar to jump",100,240,textFont)
 
         if keys.Pressed[K_ESCAPE]:
             game.over = True
@@ -151,12 +157,13 @@ def levelOne():
     currentrocklanded = -1
     challengeSpeed = 2
     global last
+    fire.moveTo(randint(50,game.width-50),-fire.height)
+    fire.speed = randint(4,8)
 
     #Start Game
     while not game.over:
         game.processInput()
 
-        #Scroll World
         game.scrollBackground("left",1)
         drawScore()
               
@@ -178,6 +185,13 @@ def levelOne():
                     landed = True
                     currentrocklanded = index
                     
+        if game.score >=1 :   
+            fire.y += fire.speed
+            fire.draw(False)
+            if fire.isOffScreen("bottom") or not fire.visible:
+                fire.moveTo(randint(50,game.width-50),-fire.height)
+                fire.speed = randint(4,10)
+                fire.visible = True
           
         #Jumping Logic
         if jumping:
@@ -243,7 +257,7 @@ def gameover():
 game = Game(1008,440,"Glitch - The Lava Jumper")
 
 platforms = []
-size = 6
+size = 20
 last = size -1
 
 #Load  objects
@@ -273,6 +287,8 @@ hero.stop()
 numbers = []
 for n in range(10):
     numbers.append(Image("images\\t" + str(n) + ".png",game))
+
+fire = Animation("images\\fire.png",20,game,960/5,768/4,3)
     
 #Play Intro
 intro()

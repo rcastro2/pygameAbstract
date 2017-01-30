@@ -438,6 +438,7 @@ class Animation(Image):
                 self.ftick = 0
             if not loop and self.f == len(self.images)-1:
                 self.visible = False
+                self.f = 0
             if self.f > len(self.images)-1:
                 self.f = 0
                 self.ftick = 0
