@@ -68,6 +68,7 @@ class Sound(object):
         self.file = pygame.mixer.Sound(path)
 
     def play(self,time=0):
+        #time is measured in ms
         c = pygame.mixer.Channel(self.chan)
         if not c.get_busy():
                 c.play(self.file,maxtime=time)

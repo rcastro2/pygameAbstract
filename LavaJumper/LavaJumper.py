@@ -41,7 +41,6 @@ def intro():
         hsemblem.draw()
         infoemblem.draw()
         
-        
         if game.time <= 0:
             game.drawText("Press [SPACE] to Start",game.width/2-175,game.height / 2 + 30,Font(black,32,red,'mael.ttf'))
             if keys.Pressed[K_SPACE]:
@@ -77,7 +76,6 @@ def newHighScore():
 
         game.scrollBackground("left",1)
 
- 
         game.drawText("Press [ESC] to Quit",game.width/2-175,game.height * .75,Font(black,32,red,'mael.ttf'))
         
         nhstitle.draw()
@@ -157,8 +155,13 @@ def levelOne():
     currentrocklanded = -1
     challengeSpeed = 2
     global last
-    fire.moveTo(randint(50,game.width-50),-fire.height)
+    fire.moveTo(randint(fire.width,game.width-fire.width),-fire.height)
     fire.speed = randint(4,8)
+    
+    dragon.moveTo(game.width + dragon.width / 2 + 20,randint(dragon.width/2,game.height-dragon.height/2))
+    dragon.setSpeed(4,90)
+
+    game.playMusic()
 
     #Start Game
     while not game.over:
@@ -175,7 +178,7 @@ def levelOne():
             platform.draw()
             #Recycle platforms
             if platform.isOffScreen("left"):
-                platform.moveTo(platforms[last].x + platforms[last].width + 150,randint(200,300))
+                platform.moveTo(platforms[last].x + platforms[last].width + 100,randint(200,300))
                 last = index
             #Check if hero is on a rock
             if hero.collidedWith(platform,"rectangle") and hero.bottom < platform.top + 15 and hero.x > platform.left and hero.x < platform.right: 
@@ -183,16 +186,9 @@ def levelOne():
                 if not landed and currentrocklanded != index:
                     game.score += 1
                     landed = True
+                    landing.play()
                     currentrocklanded = index
-                    
-        if game.score >=1 :   
-            fire.y += fire.speed
-            fire.draw(False)
-            if fire.isOffScreen("bottom") or not fire.visible:
-                fire.moveTo(randint(50,game.width-50),-fire.height)
-                fire.speed = randint(4,10)
-                fire.visible = True
-          
+                             
         #Jumping Logic
         if jumping:
             hero.y -= 18 * factor
@@ -203,6 +199,7 @@ def levelOne():
                 factor = 1
         if keys.Pressed[K_SPACE] and onrock and not jumping:
             jumping = True
+            jumpingSound.play()
             
         if not onrock:
             hero.y += 5
@@ -214,23 +211,47 @@ def levelOne():
         if keys.Pressed[K_RIGHT]:
             hero.x += 4
             hero.nextFrame()
+            if onrock :#and hero.f in [1,2,8,9]:
+                walking.play(250)
         elif keys.Pressed[K_LEFT]:
             hero.x -= 4
             hero.prevFrame()
+            if onrock :#and hero.f in [1,2,8,9]:
+                walking.play(250)
         else:
             hero.draw()
 
+        #Fire and dragon logic
+        if game.score >= 9 and game.score < 11:   
+            fire.y += fire.speed
+            fire.draw(False)
+            fireSound.play()
+            if fire.isOffScreen("bottom") or not fire.visible:
+                fire.moveTo(randint(50,game.width-50),-fire.height)
+                fire.speed = randint(4,10)
+                fire.visible = True
+            if hero.collidedWith(fire):
+                game.over = True
+        if (game.score >= 4 and game.score < 6) or not dragon.isOffScreen():
+            dragon.move(False)
+            dragonSound.play()
+            if dragon.isOffScreen("left"):
+                dragon.moveTo(game.width + dragon.width / 2 + 20,randint(dragon.width/2,game.height-dragon.height/2))
+            if dragon.collidedWith(hero):
+                hero.x -= 6
+
         if hero.isOffScreen("bottom"):
             game.over = True
+            splash.play()
               
         game.update(30)
 
 #####################
 def gameover():
     endtitle = Image("images\\tgameover.png",game)
-    game.over = False
+    
     global last
-    while not game.over:
+    while True:
         game.processInput()
 
         game.scrollBackground("left",1)
@@ -244,12 +265,15 @@ def gameover():
                 platform.moveTo(platforms[last].x + platforms[last].width + 150,randint(200,300))
                 last = index
  
-        game.drawText("Press [ESC] to Quit",game.width/2-175,game.height * .75,Font(black,32,red,'mael.ttf'))
+        game.drawText("Play Again? [Y/N]",game.width/2-175,game.height * .75,Font(black,32,red,'mael.ttf'))
         
         endtitle.draw()
         
-        if keys.Pressed[K_ESCAPE]:
-            game.over = True
+        if keys.Pressed[K_y]:
+            game.over = False
+            return True
+        if keys.Pressed[K_n]:
+            return False
 
         game.update(30)
         
@@ -257,7 +281,7 @@ def gameover():
 game = Game(1008,440,"Glitch - The Lava Jumper")
 
 platforms = []
-size = 20
+size = 10
 last = size -1
 
 #Load  objects
@@ -289,24 +313,44 @@ for n in range(10):
     numbers.append(Image("images\\t" + str(n) + ".png",game))
 
 fire = Animation("images\\fire.png",20,game,960/5,768/4,3)
-    
+dragon = Animation("images\\dragon.png",11,game,768/3,1024/4,4)
+
+game.setMusic("sounds\\avalanche.mp3")
+dragonSound = Sound("sounds\\dragonBreathe.wav",1)
+fireSound = Sound("sounds\\fireball.wav",2)
+jumpingSound = Sound("sounds\\jumping.wav",3)
+landing = Sound("sounds\\landing.wav",4)
+walking = Sound("sounds\\walking.wav",5)
+splash = Sound("sounds\\splash.wav",6)
+
 #Play Intro
 intro()
 
 #Position objects
-platforms[0].moveTo(game.width/2,randint(200,300))
+platforms[0].moveTo(game.width/2,randint(250,300))
 for index in range(1,size):
-    platforms[index].moveTo(platforms[index-1].x + platforms[index-1].width + 150,randint(200,300))
+    platforms[index].moveTo(platforms[index-1].x + platforms[index-1].width + 100,randint(250,350))
 
 hero.moveTo(platforms[0].x,platforms[0].y-platforms[0].height/2-hero.height)
 
 world = [hero]
 world.extend(platforms)
 
-#Play Game
-levelOne()
+play = True
+while play:
+    #Play Game
+    levelOne()
+    play = gameover()
+    platforms[0].moveTo(game.width/2,randint(250,300))
+    for index in range(1,size):
+        platforms[index].moveTo(platforms[index-1].x + platforms[index-1].width + 100,randint(250,350))
 
-gameover()
+    hero.moveTo(platforms[0].x,platforms[0].y-platforms[0].height/2-hero.height)
+
+    world = [hero]
+    world.extend(platforms)
+    game.score = 0
+    last = size -1
 
 game.quit()
 
