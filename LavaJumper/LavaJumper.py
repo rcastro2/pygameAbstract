@@ -222,7 +222,7 @@ def levelOne():
             hero.draw()
 
         #Fire and dragon logic
-        if game.score >= 9 and game.score < 11:   
+        if game.score >= 10 and game.score < 15:   
             fire.y += fire.speed
             fire.draw(False)
             fireSound.play()
@@ -232,7 +232,7 @@ def levelOne():
                 fire.visible = True
             if hero.collidedWith(fire):
                 game.over = True
-        if (game.score >= 4 and game.score < 6) or not dragon.isOffScreen():
+        if (game.score >= 4 and game.score < 9) or not dragon.isOffScreen():
             dragon.move(False)
             dragonSound.play()
             if dragon.isOffScreen("left"):

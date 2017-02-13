@@ -420,12 +420,18 @@ class Animation(Image):
     def stop(self):
         self.playAnim = False
     def nextFrame(self):
-        self.f += 1
+        self.ftick += 1
+        if self.ftick % self.frate == 0:
+             self.f += 1
+             self.ftick = 0
         if self.f > len(self.images)-1:
             self.f = 0
         self.draw()
     def prevFrame(self):
-        self.f -= 1
+        self.ftick += 1
+        if self.ftick % self.frate == 0:
+             self.f -= 1
+             self.ftick = 0
         if self.f < 0:
             self.f = len(self.images)-1
         self.draw()
