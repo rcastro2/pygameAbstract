@@ -209,7 +209,7 @@ def levelOne():
             hero.x = hero.width / 2
      
         if keys.Pressed[K_RIGHT]:
-            hero.x += 4
+            hero.x += 4 + challengeSpeed
             hero.nextFrame()
             if onrock :#and hero.f in [1,2,8,9]:
                 walking.play(250)
@@ -305,7 +305,7 @@ for times in range(size):
     f = randint(1,3)
     platforms.append(Image("images\\platform" + str(f) + ".png",game))
 
-hero = Animation("images\\glitch_walker.png",16,game,832/8,228/2,5)
+hero = Animation("images\\glitch_walker.png",16,game,832/8,228/2)
 hero.stop()
 
 numbers = []
