@@ -289,8 +289,8 @@ class Image(object):
             self.oldwidth,self.oldheight = self.width,self.height
         if self.visible:
            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
-        self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
         self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
+        self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
 
     def move(self, bounce = False):
         if bounce:
