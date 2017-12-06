@@ -15,9 +15,9 @@ bk = Image("images\\day.png",game)
 bk.resizeTo(game.width, game.height)
 game.setBackground(bk)
 
-bird = Animation("images\\bird.png",3,game,44,34,frate=6)
+bird = Animation("images\\bird.png",3,game,44,34,6)
 
-bar = Animation("images\\bar.png",3,game,700,110,frate=3)
+bar = Animation("images\\bar.png",3,game,700,110,3)
 bar.resizeTo(game.width,bar.height)
 bar.moveTo(game.width/2,game.height-50)
 
@@ -25,16 +25,14 @@ ring = Animation("images\\ring2.png",64,game,64,64)
 ring.moveTo(35,430)
 
 ring2 = Animation("images\\ring2.png",64,game,64,64)
-ring2.setSpeed(2,90)
-pipeTop = Image("images\\pipe_top.png",game)
-pipeTop.setSpeed(2,90)
-pipeBottom = Image("images\\pipe_bot.png",game)
-pipeBottom.setSpeed(2,90)
-
 y = randint(200,300)
-ring2.moveTo(game.width + 100,y)
-pipeBottom.moveTo(game.width + 100, y + 175)
-pipeTop.moveTo(game.width + 100, y - 175)
+ring2.moveTo(game.width,y)
+ring2.setSpeed(2,90)
+
+pipeTop = Image("images\\pipe_top.png",game)
+pipeBottom = Image("images\\pipe_bot.png",game)
+
+
 
 title = Image("images\\logo.png",game)
 endtitle = Image("images\\flappybird_end.png",game)
@@ -44,7 +42,7 @@ bar.draw()
 title.draw()
 game.font.shadowColor = black
 game.drawText("Press [Space] to Start.",237,280)
-game.update(1)
+game.update()
 game.wait(K_SPACE)
 
 scoreFont = Font(black,36)
@@ -54,12 +52,11 @@ while not game.over:
     game.scrollBackground("left",2)
 
     bird.draw()
-    bird.rotateTo(-10)
-    bird.y += 2
-    
-    pipeTop.move()
-    pipeBottom.move()
+
     ring2.move()
+    pipeBottom.moveTo(ring2.x, ring2.y + 175)
+    pipeTop.moveTo(ring2.x, ring2.y - 175)
+
     bar.draw()
     ring.draw()
     
@@ -69,7 +66,10 @@ while not game.over:
         
     if keys.Pressed[K_SPACE] :
         bird.y -= 5
-        bird.rotateTo(10)    
+        bird.rotateTo(10)
+    else:
+        bird.rotateTo(-10)
+        bird.y += 2
 
     if bird.collidedWith(ring2):
         game.score += 1
@@ -77,11 +77,7 @@ while not game.over:
  
     if pipeBottom.isOffScreen("left"):
         y = randint(200,300)
-        ring2.moveTo(game.width + 100,y)
-        pipeBottom.moveTo(game.width + 100, y + 175)
-        pipeTop.moveTo(game.width + 100, y - 175)
-        pipeTop.speed += 1
-        pipeBottom.speed += 1
+        ring2.moveTo(game.width,y)
         ring2.speed +=1
         ring2.visible = True
 
