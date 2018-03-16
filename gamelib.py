@@ -15,8 +15,20 @@ N,NE,E,SE,S,SW,W,NW,C = 0,1,2,3,4,5,6,7,8
 class Mouse(object):
 	def __init__(self):
 		self.x, self.y, self.visible, self.width, self.height, self.name = 0, 0, True, 0, 0, "mouse"
+		self.rect = pygame.Rect(self.x-1,self.y-1,self.x+1,self.y+1)
 		self.LeftClick, self.LeftClickable, self.LeftButton = False, True, None
 		self.RightClick, self.RightClickable, self.RightButton = False, True, None
+	def collidedWith(self,obj,shape="circle"):
+                if obj.visible and self.visible:
+                    if shape =="circle":
+                        dx = self.x - obj.x
+                        dy = self.y - obj.y
+                        d = sqrt(pow(dx,2) + pow(dy,2))
+                        if d < self.width/4 + obj.width/4:
+                            return True 
+                    elif shape == "rectangle" and self.rect.colliderect(obj.rect):
+                            return True              
+                return False
 
 class KeyBoard(object):
 	def __init__(self):
@@ -86,6 +98,7 @@ class Game(object):
         self.over = False
         self.score = 0
         self.font = Font()
+        
 
     def clearBackground(self,color=(0,0,0)):
         self.screen.fill(color)
@@ -213,7 +226,9 @@ class Game(object):
                     mouse.RightClickable = False
             if not mouse.RightClickable and not mouse.RightButton:
                     mouse.RightClickable = True
-                    
+            
+            mouse.rect = pygame.Rect(mouse.x-1,mouse.y-1,mouse.x+1,mouse.y+1)
+        
             pygame.mouse.set_visible(mouse.visible)
             if joy.connected:
                     padx,pady = joy.joystick.get_hat(0)
@@ -256,6 +271,7 @@ class Image(object):
         self.angle, self.da = 0,0
         self.x, self.y, self.dx, self.dy, self.dxsign, self.dysign = self.game.width/2,self.game.height/2,0,0,1,1
         self.left, self.top, self.right, self.bottom = 0,0,0,0
+        self.collisionBorder = None 
         self.bounce = False
         self.rotate,self.rotate_angle, self.rda = "still",0,0
         self.speed = 0
@@ -268,12 +284,12 @@ class Image(object):
         self.original = image
 
     def collidedWith(self,obj,shape="circle"):
-        if (obj.visible or isinstance(obj,Mouse)) and self.visible:     
+        if (obj.visible or isinstance(obj,Mouse)) and self.visible:
             if shape =="circle":
                 dx = self.x - obj.x
                 dy = self.y - obj.y
                 d = sqrt(pow(dx,2) + pow(dy,2))
-                if d < self.width/4 + obj.width/4:
+                if d < int((self.width/2+self.height/2)/2) + int((obj.width/2+obj.height/2)/2):
                     return True 
             elif shape == "rectangle" and self.rect.colliderect(obj.rect):
                     return True              
@@ -289,9 +305,15 @@ class Image(object):
             self.oldwidth,self.oldheight = self.width,self.height
         if self.visible:
            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
+
         self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
         self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
-
+        
+        if self.collisionBorder == "circle":
+            pygame.draw.circle(self.game.screen,red,(int(self.x),int(self.y)),int((self.width/2+self.height/2)/2),1)
+        elif self.collisionBorder == "rectangle":
+            pygame.draw.rect(self.game.screen,red,self.rect,1)
+            
     def move(self, bounce = False):
         if bounce:
             if self.left < self.game.left or self.right > self.game.right:

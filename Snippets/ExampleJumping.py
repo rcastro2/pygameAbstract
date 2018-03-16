@@ -32,7 +32,7 @@ while not game.over:
         landed = False
         player.y -= 12 * factor
         factor *= .96
-        if factor < .10:
+        if factor < 0.05:
             jumping = False
             factor = 1
 
