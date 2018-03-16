@@ -13,16 +13,17 @@ game = Game(800,600,"Zombie Attack!",60)
 bk  = Image("images\\Zbk.jpg",game)
 bk.resizeTo(800,600)
 zombie = Image("images\\zombie.png",game)
-zombie.resizeBy(-80)
+zombie.resizeBy(-85)
 zombie.setSpeed(4,60)
 turkey = Image("images\\turkey.gif",game)
-turkey.resizeBy(-50)
+turkey.resizeBy(-70)
 turkey.setSpeed(6,45)
 gun = Sound("sound\\Gun2.wav",1)
 chomp = Sound("sound\\ZombieChomp.wav",2)
 gobble = Sound("sound\\TurkeyGooble.wav",3)
 die = Sound("sound\\ZombieDie.wav",4)
 scope = Image("images\\crosshair.png",game)
+scope.resizeBy(-50)
 mouse.visible = False
 turkey.collisionBorder = "circle"
 zombie.collisionBorder = "rectangle"
@@ -31,10 +32,10 @@ while not game.over:
     game.processInput()
 
     bk.draw()
-   
+
     zombie.move(True)
     turkey.move(True)
-    turkey.resizeBy(1)
+    
     scope.moveTo(mouse.x,mouse.y)
     if mouse.LeftButton:
         gun.play()

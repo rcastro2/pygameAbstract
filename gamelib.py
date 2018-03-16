@@ -316,9 +316,9 @@ class Image(object):
             
     def move(self, bounce = False):
         if bounce:
-            if self.left < self.game.left or self.right > self.game.right:
+            if self.left - self.dx < self.game.left or self.right + self.dx > self.game.right:
                 self.changeXSpeed()
-            if self.top < self.game.top or self.bottom > self.game.bottom:
+            if self.top - self.dy < self.game.top or self.bottom + self.dy > self.game.bottom:
                 self.changeYSpeed()
         self.calculateSpeedDeltas()
         self.x += self.dx * self.dxsign
