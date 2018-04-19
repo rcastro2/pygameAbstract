@@ -2,7 +2,7 @@ import os,sys
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 '''
 Above two lines of code are a hack inorder to keep gamelib in a common
-location where I can update it for all games.  If you copy gamelib.py into
+location where I can update for all games.  If you copy gamelib.py into
 the same folder as the game then you don't need these lines and can simply
 delete them.
 '''
@@ -18,7 +18,7 @@ apple.moveTo(randint(apple.width,game.width-apple.width),randint(apple.height,ga
 
 bk = Image("images\\dirt.jpg",game)
 
-game.viewMouse(False)
+mouse.visible = False
 
 while not game.over:
     game.processInput()
