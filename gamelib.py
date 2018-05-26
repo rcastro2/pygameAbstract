@@ -285,6 +285,9 @@ class Image(object):
 
     def collidedWith(self,obj,shape="circle"):
         if (obj.visible or isinstance(obj,Mouse)) and self.visible:
+            self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
+            self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
+        
             if shape =="circle":
                 dx = self.x - obj.x
                 dy = self.y - obj.y
