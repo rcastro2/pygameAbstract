@@ -104,6 +104,7 @@ class Game(object):
         self.screen.fill(color)
         
     def setBackground(self,bkGraphics):
+        self.backgroundXYSet = None
         self.background = bkGraphics
         self.backgroundXY = []
         self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
