@@ -271,7 +271,7 @@ class Image(object):
         self.original, self.src = self.image, self.image
         self.angle, self.da = 0,0
         self.x, self.y, self.dx, self.dy, self.dxsign, self.dysign = self.game.width/2,self.game.height/2,0,0,1,1
-        self.left, self.top, self.right, self.bottom = 0,0,0,0
+        self.left, self.top, self.right, self.bottom = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
         self.collisionBorder = None 
         self.bounce = False
         self.rotate,self.rotate_angle, self.rda = "still",0,0
