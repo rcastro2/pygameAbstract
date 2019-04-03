@@ -33,9 +33,5 @@ while not game.over:
     bird.moveTowards(ring,2)
     
     game.update(30)
-
-game.drawText("Press [Enter] to Exit.",200,400, Font(black,40,green))
-game.update()
-game.wait(K_RETURN)
 game.quit()
 
