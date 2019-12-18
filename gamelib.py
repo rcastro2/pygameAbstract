@@ -14,17 +14,18 @@ N,NE,E,SE,S,SW,W,NW,C = 0,1,2,3,4,5,6,7,8
 
 class Mouse(object):
 	def __init__(self):
-		self.x, self.y, self.visible, self.width, self.height, self.name = 0, 0, True, 0, 0, "mouse"
-		self.rect = pygame.Rect(self.x-1,self.y-1,self.x+1,self.y+1)
+		self.x, self.y, self.visible, self.width, self.height, self.name = 0, 0, True, 4, 4, "mouse"
+		self.rect = pygame.Rect(self.x-2,self.y-2,4,4)
 		self.LeftClick, self.LeftClickable, self.LeftButton = False, True, None
 		self.RightClick, self.RightClickable, self.RightButton = False, True, None
+		self.collisionBorder = None 
 	def collidedWith(self,obj,shape="circle"):
                 if obj.visible and self.visible:
                     if shape =="circle":
                         dx = self.x - obj.x
                         dy = self.y - obj.y
                         d = sqrt(pow(dx,2) + pow(dy,2))
-                        if d < self.width/4 + obj.width/4:
+                        if d < obj.width/4:
                             return True 
                     elif shape == "rectangle" and self.rect.colliderect(obj.rect):
                             return True              
@@ -187,6 +188,11 @@ class Game(object):
             self.time -= 1/fps
         mouse.LeftClick = False
         mouse.RightClick = False
+        if mouse.collisionBorder == "circle":
+                pygame.draw.circle(self.screen,red,(int(mouse.x),int(mouse.y)),int((mouse.width/2+mouse.height/2)/2),1)
+        elif mouse.collisionBorder == "rectangle":
+                pygame.draw.rect(self.screen,red,mouse.rect,1)
+                
         pygame.display.flip()
         self.clock.tick(fps)
 
@@ -228,7 +234,7 @@ class Game(object):
             if not mouse.RightClickable and not mouse.RightButton:
                     mouse.RightClickable = True
             
-            mouse.rect = pygame.Rect(mouse.x-1,mouse.y-1,mouse.x+1,mouse.y+1)
+            mouse.rect = pygame.Rect(mouse.x-2,mouse.y-2,4,4)
         
             pygame.mouse.set_visible(mouse.visible)
             if joy.connected:
