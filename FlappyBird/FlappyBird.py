@@ -9,7 +9,7 @@ simply delete them.
 
 from gamelib import *
 
-game = Game(640,480,"Flappy Bird")
+game = Game(800,600,"Flappy Bird")
 
 bk = Image("images\\day.png",game)
 bk.resizeTo(game.width, game.height)
@@ -18,44 +18,48 @@ game.setBackground(bk)
 bird = Animation("images\\bird.png",3,game,44,34,6)
 
 bar = Animation("images\\bar.png",3,game,700,110,3)
-bar.resizeTo(game.width,bar.height)
-bar.moveTo(game.width/2,game.height-50)
+bar.width = game.width
+bar.y = game.height - 50
 
 ring = Animation("images\\ring2.png",64,game,64,64)
-ring.moveTo(35,430)
+ring.moveTo(35,game.height - 50)
 
 ring2 = Animation("images\\ring2.png",64,game,64,64)
-y = randint(200,300)
-ring2.moveTo(game.width,y)
+ring2.x = game.width + 100
 ring2.setSpeed(2,90)
 
 pipeTop = Image("images\\pipe_top.png",game)
 pipeBottom = Image("images\\pipe_bot.png",game)
 
-
-
 title = Image("images\\logo.png",game)
+title.y = bird.y - 150
 endtitle = Image("images\\flappybird_end.png",game)
+endtitle.y = bird.y - 150
 
-bk.draw()
-bar.draw()
-title.draw()
-game.font.shadowColor = black
-game.drawText("Press [Space] to Start.",237,280)
-game.update()
-game.wait(K_SPACE)
-
-scoreFont = Font(black,36)
-
+#Start Screen
 while not game.over:
     game.processInput()
     game.scrollBackground("left",2)
 
     bird.draw()
+    title.draw()
+    bar.draw()
+    if keys.Pressed[K_SPACE]:
+        game.over = True
+    game.drawText("Press [SPACE] to begin",bird.x - 180, game.height - 70, Font(red,36,black,"Comic Sans MS"))
+    game.update(30)
+game.over = False
+
+#Game Screen
+while not game.over:
+    game.processInput()
+    game.scrollBackground("left",ring2.speed)
+
+    bird.draw()
 
     ring2.move()
-    pipeBottom.moveTo(ring2.x, ring2.y + 175)
-    pipeTop.moveTo(ring2.x, ring2.y - 175)
+    pipeBottom.moveTo(ring2.x, ring2.y + 200)
+    pipeTop.moveTo(ring2.x, ring2.y - 200)
 
     bar.draw()
     ring.draw()
@@ -65,7 +69,7 @@ while not game.over:
         endtitle.draw()
         
     if keys.Pressed[K_SPACE] :
-        bird.y -= 5
+        bird.y -= 4
         bird.rotateTo(10)
     else:
         bird.rotateTo(-10)
@@ -75,17 +79,28 @@ while not game.over:
         game.score += 1
         ring2.visible = False
  
-    if pipeBottom.isOffScreen("left"):
+    if ring.x < -100:
         y = randint(200,300)
         ring2.moveTo(game.width,y)
         ring2.speed +=1
         ring2.visible = True
 
-    game.drawText(" x " + str(game.score),70,420, scoreFont)
+    game.drawText(" x " + str(game.score),65,game.height - 85, Font(red,48,black,"Comic Sans MS"))
     game.update(30)
 
-game.drawText("Press [Enter] to Exit.",200,400, Font(black,40,green))
-game.update()
-game.wait(K_RETURN)
+#Game Over
+game.over = False
+while not game.over:
+    game.processInput()
+    game.scrollBackground("left",2)
+
+    bird.draw()
+    endtitle.draw()
+    bar.draw()
+    if keys.Pressed[K_ESCAPE]:
+        game.over = True
+    game.drawText("Press [ECAPE] to end",bird.x - 180, game.height - 80, Font(red,36,black,"Comic Sans MS"))
+    game.update(30)
+game.over = False
 game.quit()
 
