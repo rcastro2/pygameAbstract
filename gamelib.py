@@ -107,8 +107,8 @@ class Game(object):
         self.backgroundXYSet = None
         self.background = bkGraphics
         self.backgroundXY = []
-        self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
-        self.backgroundXY.append({"x":bkGraphics.x,"y":bkGraphics.y})
+        self.backgroundXY.append({"x":self.width / 2,"y":self.height / 2})
+        self.backgroundXY.append({"x":self.width / 2,"y":self.height / 2})
 
     def drawBackground(self):
         self.background.draw()

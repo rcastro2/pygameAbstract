@@ -11,9 +11,11 @@ from gamelib import *
 
 game = Game(800,600,"Flappy Bird")
 
-bk = Image("images\\day.png",game)
-bk.resizeTo(game.width, game.height)
-game.setBackground(bk)
+day = Image("images\\day.png",game)
+day.resizeTo(game.width, game.height)
+night = Image("images\\night.png",game)
+night.resizeTo(game.width, game.height)
+game.setBackground(day)
 
 bird = Animation("images\\bird.png",3,game,44,34,6)
 
@@ -46,6 +48,10 @@ while not game.over:
     bar.draw()
     if keys.Pressed[K_SPACE]:
         game.over = True
+    if keys.Pressed[K_n]:
+        game.setBackground(night)
+    if keys.Pressed[K_d]:
+        game.setBackground(day)
     game.drawText("Press [SPACE] to begin",bird.x - 180, game.height - 70, Font(red,36,black,"Comic Sans MS"))
     game.update(30)
 game.over = False
@@ -79,9 +85,9 @@ while not game.over:
         game.score += 1
         ring2.visible = False
  
-    if ring.x < -100:
+    if ring2.x < -100:
         y = randint(200,300)
-        ring2.moveTo(game.width,y)
+        ring2.moveTo(game.width + 100,y)
         ring2.speed +=1
         ring2.visible = True
 
