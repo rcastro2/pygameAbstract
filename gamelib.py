@@ -189,9 +189,9 @@ class Game(object):
             self.time -= 1/fps
         mouse.LeftClick = False
         mouse.RightClick = False
-        if mouse.collisionBorder == "circle":
+        if mouse.collisionBorder == "circle" or self.collisionBorder == "circle":
                 pygame.draw.circle(self.screen,red,(int(mouse.x),int(mouse.y)),int((mouse.width/2+mouse.height/2)/2),1)
-        elif mouse.collisionBorder == "rectangle":
+        elif mouse.collisionBorder == "rectangle" or self.collisionBorder == "rectangle":
                 pygame.draw.rect(self.screen,red,mouse.rect,1)
                 
         pygame.display.flip()
