@@ -38,6 +38,11 @@ title.y = bird.y - 150
 endtitle = Image("images\\flappybird_end.png",game)
 endtitle.y = bird.y - 150
 
+point = Sound("sounds\\point.ogg",1)
+wing = Sound("sounds\\wing.ogg",2)
+hit = Sound("sounds\\hit.ogg",3)
+die = Sound("sounds\\die.ogg",4)
+
 #Start Screen
 while not game.over:
     game.processInput()
@@ -72,11 +77,13 @@ while not game.over:
     
     if bird.collidedWith(pipeTop,"rectangle") or bird.collidedWith(pipeBottom,"rectangle") or bird.collidedWith(bar,"rectangle"):
         game.over = True
-        endtitle.draw()
+        hit.play()
+        die.play()
         
     if keys.Pressed[K_SPACE] :
         bird.y -= 4
         bird.rotateTo(10)
+        wing.play()
     else:
         bird.rotateTo(-10)
         bird.y += 2
@@ -84,6 +91,7 @@ while not game.over:
     if bird.collidedWith(ring2):
         game.score += 1
         ring2.visible = False
+        point.play()
  
     if ring2.x < -100:
         y = randint(200,300)

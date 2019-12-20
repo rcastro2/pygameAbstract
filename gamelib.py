@@ -96,6 +96,7 @@ class Game(object):
         self.background,self.backgroundXY, self.backgroundXYSet = None, [],False
         self.fps, self.time, self.clock = 20, time + 1, pygame.time.Clock()
         self.left, self.top, self.right, self.bottom = 0,0,w,h
+        self.collisionBorder = None
         self.over = False
         self.score = 0
         self.font = Font()
@@ -319,9 +320,9 @@ class Image(object):
         self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
         self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
         
-        if self.collisionBorder == "circle":
+        if self.collisionBorder == "circle" or self.game.collisionBorder == "circle":
             pygame.draw.circle(self.game.screen,red,(int(self.x),int(self.y)),int((self.width/2+self.height/2)/2),1)
-        elif self.collisionBorder == "rectangle":
+        elif self.collisionBorder == "rectangle" or self.game.collisionBorder == "rectangle":
             pygame.draw.rect(self.game.screen,red,self.rect,1)
             
     def move(self, bounce = False):
