@@ -259,38 +259,34 @@ class Game(object):
     def quit(self):
         pygame.quit()
 
-class Image(object):
-    def __init__(self,path,game,use_alpha=True):
+class GameObject(object):
+    def __init__(self,game):
         self.game = game
-        if not isinstance(path, str):
-                self.image = path
-        else:
-                if use_alpha:
-                        self.image = pygame.image.load(path).convert_alpha()
-                else:
-                        self.image = pygame.image.load(path).convert()
-                        trans_color = self.image.get_at((0,0))
-                        self.image.set_colorkey(trans_color)
-                        
-        self.width,self.original_width,self.oldwidth = self.image.get_width(),self.image.get_width(),self.image.get_width()
-        self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
-        self.rect = None
-        self.original, self.src = self.image, self.image
-        self.angle, self.da = 0,0
         self.x, self.y, self.dx, self.dy, self.dxsign, self.dysign = self.game.width/2,self.game.height/2,0,0,1,1
-        self.left, self.top, self.right, self.bottom = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
-        self.collisionBorder = None 
-        self.bounce = False
+        self.angle, self.da = 0,0
         self.rotate,self.rotate_angle, self.rda = "still",0,0
         self.speed = 0
+        self.bounce = False
+        self.collisionBorder = None
         self.visible = True
-        self.health = 100
-        self.damage = 0
-
-    def setImage(self,image):
-        self.image = image
-        self.original = image
-
+        
+    def setSpeed(self,speed,angle=-999):
+        if angle == -999:
+            angle = math.degrees(self.angle) 
+        self.angle, self.speed = math.radians(angle), speed
+        self.calculateSpeedDeltas()
+        
+    def move(self, bounce = False):
+        if bounce:
+            if self.left - self.dx < self.game.left or self.right + self.dx > self.game.right:
+                self.changeXSpeed()
+            if self.top - self.dy < self.game.top or self.bottom + self.dy > self.game.bottom:
+                self.changeYSpeed()
+        self.calculateSpeedDeltas()
+        self.x += self.dx * self.dxsign
+        self.y += self.dy * self.dysign
+        self.draw()
+        
     def collidedWith(self,obj,shape="circle"):
         if (obj.visible or isinstance(obj,Mouse)) and self.visible:
             self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
@@ -306,36 +302,10 @@ class Image(object):
                     return True              
         return False
 
-    def draw(self):
-        if self.width != self.oldwidth or self.height != self.oldheight:
-            self.resizeTo(self.width,self.height)
-        if self.rotate == "left" or self.rotate == "right" or self.rotate == "to":
-            self.image = self.original
-            self.image = pygame.transform.rotate(self.image,self.rotate_angle * 180 / math.pi)
-            self.width,self.height = self.image.get_width(),self.image.get_height()
-            self.oldwidth,self.oldheight = self.width,self.height
-        if self.visible:
-           self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
-
-        self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
-        self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
-        
-        if self.collisionBorder == "circle" or self.game.collisionBorder == "circle":
-            pygame.draw.circle(self.game.screen,red,(int(self.x),int(self.y)),int((self.width/2+self.height/2)/2),1)
-        elif self.collisionBorder == "rectangle" or self.game.collisionBorder == "rectangle":
-            pygame.draw.rect(self.game.screen,red,self.rect,1)
-            
-    def move(self, bounce = False):
-        if bounce:
-            if self.left - self.dx < self.game.left or self.right + self.dx > self.game.right:
-                self.changeXSpeed()
-            if self.top - self.dy < self.game.top or self.bottom + self.dy > self.game.bottom:
-                self.changeYSpeed()
-        self.calculateSpeedDeltas()
-        self.x += self.dx * self.dxsign
-        self.y += self.dy * self.dysign
-        self.draw()
-
+    def calculateSpeedDeltas(self):
+        self.dx = self.speed * math.sin(self.angle - math.pi)
+        self.dy = self.speed * math.cos(self.angle - math.pi)
+                
     def changeXSpeed(self,dx = -999):
         if dx == -999:
             self.dxsign = -self.dxsign
@@ -351,6 +321,11 @@ class Image(object):
         self.speed = speed
         self.calculateSpeedDeltas()
         #self.move()
+        
+    def stop(self):
+        self.speed *= 0.95
+        self.calculateSpeedDeltas()
+        
     def rotateBy(self,angle=0,direction="right"):
         rad = angle * math.pi / 180
         self.rotate = direction
@@ -359,20 +334,25 @@ class Image(object):
         self.rotate_angle = self.rotate_angle + rad
         self.angle = self.angle + rad
         #self.move()
+        
     def moveTo(self,x,y):
         self.x,self.y = x,y
         self.draw()
+        
     def moveTowards(self,obj,speed):
         self.setSpeed(speed,self.angleTo(obj))
         self.move()
+        
     def rotateTowards(self,obj):
         self.rotate_angle = (self.angleTo(obj) + 90) * math.pi / 180
         self.rotate = "to"
         #self.draw()
+        
     def rotateTo(self,angle):
         self.rotate = "left"
         self.rotate_angle = angle * math.pi / 180
         self.angle = angle * math.pi / 180
+        
     def angleTo(self,obj):
         dx = obj.x - self.x
         dy = obj.y - self.y
@@ -382,32 +362,65 @@ class Image(object):
         if dy > 0:
             angle += 180
         return angle
-    def setSpeed(self,speed,angle=-999):
-        if angle == -999:
-            angle = math.degrees(self.angle) 
-        self.angle, self.speed = math.radians(angle), speed
-        self.calculateSpeedDeltas()
-    def calculateSpeedDeltas(self):
-        self.dx = self.speed * math.sin(self.angle - math.pi)
-        self.dy = self.speed * math.cos(self.angle - math.pi)
-    def makeVisible(self,visibility = -999):
-        if visibility == -999:
-            visibility = not self.visible
-        self.visible = visibility
 
-    def moveX(self,a):
-        self.x = self.x + a
-    def moveY(self,a):
-        self.y = self.y + a
-    def moveXY(self,a,b):
-        self.x = self.y + a
-        self.y = self.y + b
+    def getAngle(self,angle="deg"):
+        if angle == "deg":
+            return math.degrees(self.angle)
+        return self.angle
+
+    def displayCollisionBorder(self):
+        if self.collisionBorder == "circle" or self.game.collisionBorder == "circle":
+            pygame.draw.circle(self.game.screen,red,(int(self.x),int(self.y)),int((self.width/2+self.height/2)/2),1)
+        elif self.collisionBorder == "rectangle" or self.game.collisionBorder == "rectangle":
+            pygame.draw.rect(self.game.screen,red,self.rect,1)
+
+class Image(GameObject):
+    def __init__(self,path,game,use_alpha=True):
+        GameObject.__init__(self,game)
+        if not isinstance(path, str):
+                self.image = path
+        else:
+                if use_alpha:
+                        self.image = pygame.image.load(path).convert_alpha()
+                else:
+                        self.image = pygame.image.load(path).convert()
+                        trans_color = self.image.get_at((0,0))
+                        self.image.set_colorkey(trans_color)
+                        
+        self.width,self.original_width,self.oldwidth = self.image.get_width(),self.image.get_width(),self.image.get_width()
+        self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
+        self.rect = None
+        self.original, self.src = self.image, self.image
+        self.left, self.top, self.right, self.bottom = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
+        self.health = 100
+        self.damage = 0
+
+    def setImage(self,image):
+        self.image = image
+        self.original = image
+
+    def draw(self):
+        if self.width != self.oldwidth or self.height != self.oldheight:
+            self.resizeTo(self.width,self.height)
+        if self.rotate == "left" or self.rotate == "right" or self.rotate == "to":
+            self.image = self.original
+            self.image = pygame.transform.rotate(self.image,self.rotate_angle * 180 / math.pi)
+            self.width,self.height = self.image.get_width(),self.image.get_height()
+            self.oldwidth,self.oldheight = self.width,self.height
+        if self.visible:
+           self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
+
+        self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
+        self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
+        self.displayCollisionBorder()
+
 
     def resizeTo(self,w,h):
         self.original = pygame.transform.scale(self.src,(int(w),int(h)))
         self.image = self.original
         self.width,self.height = self.image.get_width(),self.image.get_height()
         self.oldwidth,self.oldheight = self.width,self.height
+        
     def resizeBy(self,pct):
         factor = 1 + pct/100.0
         self.resizeTo(int(self.width * factor), int(self.height * factor))
@@ -426,11 +439,7 @@ class Image(object):
                 offscreen = self.left > self.game.right	
         return offscreen
 
-    def getAngle(self,angle="deg"):
-        if angle == "deg":
-            return math.degrees(self.angle)
-        return self.angle
-
+ 
 class Animation(Image):
     def __init__(self,path,sequence,game, width = 0, height = 0,frate = 1,use_alpha=True):
         self.f, self.frate, self.ftick, self.loop, self.once = 0,frate,0,True,True
@@ -466,10 +475,13 @@ class Animation(Image):
                 frame_image = self.sheet.subsurface(rect)
                 self.images.append(frame_image)
                 self.source.append(frame_image)
+                
     def play(self):
         self.playAnim = True
+        
     def stop(self):
         self.playAnim = False
+        
     def nextFrame(self):
         self.ftick += 1
         if self.ftick % self.frate == 0:
@@ -478,6 +490,7 @@ class Animation(Image):
         if self.f > len(self.images)-1:
             self.f = 0
         self.draw()
+        
     def prevFrame(self):
         self.ftick += 1
         if self.ftick % self.frate == 0:
@@ -486,6 +499,7 @@ class Animation(Image):
         if self.f < 0:
             self.f = len(self.images)-1
         self.draw()
+        
     def draw(self, loop = True):
         if self.visible:
             Image.setImage(self, self.images[self.f])
@@ -504,10 +518,46 @@ class Animation(Image):
     def rotateBy(self,angle=0,direction="right"):
         Image.rotateBy(self,angle,direction)
         return
+
     def resizeTo(self,w,h):
         self.width, self.height = w, h
         for i in range(len(self.images)):
             self.images[i] = pygame.transform.scale(self.source[i],(int(self.width),int(self.height)))
+            
     def resizeBy(self,pct):
         factor = 1 + pct / 100.0
         self.resizeTo(self.width * factor, self.height * factor)
+
+class Polygon(GameObject):
+    def __init__(self,side,size,game,color=(0,0,0)):
+        GameObject.__init__(self,game)
+        self.game = game
+        self.side, self.size, self.color = side, size, color
+        self.width, self.height = self.size * 2, self.size * 2
+        self.reference_angle = 2 * math.pi / side
+        self.points = []
+        self.updatePoints(True)
+
+    def draw(self):
+        if self.visible:
+             self.updatePoints()
+             pygame.draw.polygon(self.game.screen,self.color,self.points)
+             self.displayCollisionBorder()
+             
+    def calculateSpeedDeltas(self):
+        self.dx = self.speed * math.cos(self.angle - math.pi)
+        self.dy = self.speed * math.sin(self.angle - math.pi)
+             
+    def updatePoints(self,empty=False):
+        xcoord, ycoord = [], []        
+        for index in range(self.side):
+             x = self.x + self.size * math.cos(self.rotate_angle + self.reference_angle * index)
+             y = self.y + self.size * math.sin(self.rotate_angle + self.reference_angle * index)
+             xcoord.append(x)
+             ycoord.append(y)
+             if not empty:
+                  self.points[index] = (x,y)
+             else:
+                  self.points.append( (x,y) )
+        self.left, self.top, self.right, self.bottom  = min(xcoord),min(ycoord),max(xcoord),max(ycoord)
+        self.rect = pygame.Rect(self.left,self.top,self.width,self.height)

@@ -54,21 +54,18 @@ explosion = Animation("images\\explosion1.png",22,game,1254/22,64)
 explosion.visible = False
 
 fuel = 1000
-#PreGame
+#Start Screen
 game.drawBackground()
-game.drawText("Space Dodger",game.width/4,game.height/2, Font(green,80,yellow,"arial bold") )
+game.drawText("Astro Traveler",game.width/4,game.height/2, Font(green,80,yellow,"arial bold") )
 game.drawText("Press [SPACE] to Start",game.width/2,game.height/2 + 200, Font(white,32,yellow) )
 game.update()
 game.wait(K_SPACE)
-
 
 #Game
 while not game.over:
     game.processInput()
     game.scrollBackground("left",2)
 
-    
-    
     if fuel > 0:
         fuel -= 1
     for asteroid in asteroids:
@@ -105,6 +102,7 @@ while not game.over:
     if keys.Pressed[K_DOWN] and fuel > 0:
         hero.y += 5
     game.update(30)
+    
 #EndGame
 game.drawText("Game Over",game.width/4,game.height/2, Font(green,80,yellow,"arial bold") )
 game.drawText("Press [SPACE] to Quit",game.width/2,game.height/2 + 200, Font(white,32,yellow) )
