@@ -1,4 +1,4 @@
-import pygame,math
+import pygame,math,sys
 from pygame.locals import *
 from math import *
 from random import randint
@@ -10,6 +10,7 @@ pygame.joystick.init()
 black, white, light_gray, gray, dark_gray = (0,0,0), (255,255,255), (170,170,170), (128,128,128), (85,85,85)
 red, green, blue = (255,0,0), (0,255,0), (0,0,255)
 yellow, magenta, cyan = (255,255,0), (255,0,255), (0,255,255)
+orange, brown, pink = (255,128,0), (255,0, 128), (102,51,0)
 N,NE,E,SE,S,SW,W,NW,C = 0,1,2,3,4,5,6,7,8
 
 class Mouse(object):
@@ -206,7 +207,9 @@ class Game(object):
         keys.Pressed = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.over = True
+                pygame.quit()
+                sys.exit(0)
+                
             if event.type == pygame.KEYDOWN:
                 keys.Down = event.key
             else:
