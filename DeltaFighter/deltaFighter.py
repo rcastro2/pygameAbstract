@@ -18,6 +18,10 @@ def controls():
         hero.y -= 5
     if keys.Pressed[K_DOWN]:
         hero.y += 5
+    heroHPBar.moveTo(hero.x - 30, hero.y + 50)
+    heroHPBar.width = hero.health / 2
+    heroAmmoBar.moveTo(hero.x - 30, hero.y + 70)
+    heroAmmoBar.width = hero.ammo * 2
       
 #Game Program
 game = Game(800,600,"Delta Fighter")
@@ -25,19 +29,26 @@ game = Game(800,600,"Delta Fighter")
 bk = Animation("images\\field_5.png",5,game,1000,1000)
 game.setBackground(bk)
 
-title = Image("images\\logo.png",game)
+title = Image("images\\title.png",game)
 title.y = 100
-play = Image("images\\play.png",game)
-play.resizeBy(-25)
-play.y = 350
 
-howto = Image("images\\howtoplay.png",game)
-howto.resizeBy(-25)
-howto.y = 425
+story = Image("images\\story1.png",game)
+story.resizeBy(-30)
+story.y = 400
+story_off = Image("images\\story1.png",game)
+story_on = Image("images\\story2.png",game)
 
-story = Image("images\\story.png",game)
-story.resizeBy(-25)
-story.y = 500
+howto = Image("images\\howtoplay1.png",game)
+howto.resizeBy(-30)
+howto.y = 475
+howto_off = Image("images\\howtoplay1.png",game)
+howto_on = Image("images\\howtoplay2.png",game)
+
+play = Image("images\\play1.png",game)
+play.resizeBy(-30)
+play.y = 550
+play_off = Image("images\\play1.png",game)
+play_on = Image("images\\play2.png",game)
 
 storyImage = Image("images\\storyImage.png",game)
 storyImage.visible = False
@@ -53,13 +64,19 @@ hero = Animation("images\\hero2.png",3,game,288 / 3, 96, 2)
 #game.collisionBorder = "circle"
 
 bullet = Animation("images\\plasmaball1.png",11,game,352 / 11, 32)
-bullet.visible = False
+bullet.visible = True
 bullet.setSpeed(8,0)
 explosion = Animation("images\\explosion1.png",22,game,1254 / 22, 64)
 explosion.visible = False
 
+progressBar = Shape("bar",game,200,20,green)
+progressBar.moveTo(10,10)
+heroHPBar = Shape("bar",game,50,10,green)
+heroAmmoBar = Shape("bar",game,2,10,blue)
+bossHPBar = Shape("bar",game,100,10,green)
+
 asteroids = []
-for index in range(60):
+for index in range(50):
     a = Animation("images\\asteroid1t.gif", 41, game, 2173 / 41, 52)
     asteroids.append( a )
 for index in range(len(asteroids)):
@@ -76,7 +93,7 @@ for index in range(20):
     
 for index in range(len(plasmaballs)):
     x = randint(100,700)
-    y = randint(100, 5000)
+    y = randint(100, 6000)
     plasmaballs[index].moveTo(x,-y)
     s = randint(4,8)
     plasmaballs[index].setSpeed(s,180)
@@ -88,7 +105,7 @@ for index in range(20):
 
 for index in range(20):
     x = randint(100,700)
-    y = randint(100, 5000)
+    y = randint(100, 6000)
     healthpods[index].moveTo(x,-y)
     s = randint(4,8)
     healthpods[index].setSpeed(s,180)
@@ -106,41 +123,61 @@ for index in range(len(minions)):
     minions[index].setSpeed(5,180)
     minions[index].resizeBy(-50)
 
+mouse.visible = False
 #Start Screen
 while not game.over:
     game.processInput()
     game.scrollBackground("down",2)
     title.draw()
-    play.draw()
-    howto.draw()
     story.draw()
+    howto.draw()
+    play.draw()
+    hero.draw()
     storyImage.draw()
     howtoImage.draw()
-     
-    if mouse.collidedWith(play,"rectangle") and mouse.LeftClick:
-        game.over = True
-    elif storyImage.visible and mouse.LeftClick:
+    bullet.moveTo(mouse.x, mouse.y)
+    
+    if bullet.collidedWith(play,"rectangle"):
+        play.setImage(play_on.image)
+    else:
+        play.setImage(play_off.image)
+        
+    if bullet.collidedWith(story,"rectangle"):
+        story.setImage(story_on.image)
+    else:
+        story.setImage(story_off.image)
+        
+    if bullet.collidedWith(howto,"rectangle"):
+        howto.setImage(howto_on.image)
+    else:
+        howto.setImage(howto_off.image)
+    
+    if storyImage.visible and mouse.LeftClick:
         storyImage.visible = False
-    elif mouse.collidedWith(story,"rectangle") and mouse.LeftClick:
+    elif bullet.collidedWith(story,"rectangle") and mouse.LeftClick:
         storyImage.visible = True
-    elif mouse.collidedWith(howtoImage,"rectangle") and mouse.LeftClick:
+    elif howtoImage.visible and mouse.LeftClick:
         howtoImage.visible = False  
-    elif mouse.collidedWith(howto,"rectangle") and mouse.LeftClick:
+    elif bullet.collidedWith(howto,"rectangle") and mouse.LeftClick:
         howtoImage.visible = True
+    elif bullet.collidedWith(play,"rectangle") and mouse.LeftClick:
+        game.over = True
 
     game.update(30)
 
 #Level 1 Screen
 game.over = False
-hero.ammo = 0
+hero.ammo = 2
 game.level1progress = 0
 while not game.over:
     game.processInput()
     game.scrollBackground("down",2)
+    progressBar.draw()
     hero.draw()
     explosion.draw(False)
-    game.drawText("Ammo: " + str(hero.ammo),hero.x - 30, hero.y + 70)
-    game.drawText("Health: " + str(hero.health),hero.x - 30, hero.y + 50)
+    #game.drawText("Ammo: " + str(hero.ammo),hero.x - 30, hero.y + 70)
+    #game.drawText("Health: " + str(hero.health),hero.x - 30, hero.y + 50)
+    
     for index in range(len(plasmaballs)):
         plasmaballs[index].move()
         if plasmaballs[index].collidedWith(hero):
@@ -166,7 +203,7 @@ while not game.over:
             healthpods[index].visible = False
             
     controls()
-
+    progressBar.width = 200 - game.level1progress * 4
     if game.level1progress == len(asteroids) or hero.health <= 0:
         game.over = True
         
@@ -187,6 +224,7 @@ while not game.over and hero.health > 0:
     game.scrollBackground("down",2)
     hero.draw()
     boss.move()
+    bossHPBar.draw()
     bullet.move()
     explosion.draw(False)
     
@@ -216,7 +254,7 @@ while not game.over and hero.health > 0:
         
     if bullet.collidedWith(boss):
         bullet.visible = False
-        boss.health -= 10
+        boss.health -= 5
         explosion.moveTo(bullet.x, bullet.y)
         explosion.visible = True
         
@@ -229,9 +267,12 @@ while not game.over and hero.health > 0:
         
     controls()
     
-    game.drawText("Ammo: " + str(hero.ammo),hero.x - 30, hero.y + 70)
-    game.drawText("Health: " + str(hero.health),hero.x - 30, hero.y + 50)
-    game.drawText("Health: " + str(boss.health),5,5)
+    #game.drawText("Ammo: " + str(hero.ammo),hero.x - 30, hero.y + 70)
+    #game.drawText("Health: " + str(hero.health),hero.x - 30, hero.y + 50)
+    #game.drawText("Health: " + str(boss.health),5,5)
+    bossHPBar.width = boss.health 
+    bossHPBar.y = boss.bottom
+    bossHPBar.x = boss.x - bossHPBar.width / 2
     game.update(30)
     
 # Game Over Screen
