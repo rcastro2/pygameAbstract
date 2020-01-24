@@ -33,19 +33,16 @@ title = Image("images\\title.png",game)
 title.y = 100
 
 story = Image("images\\story1.png",game)
-story.resizeBy(-30)
 story.y = 400
 story_off = Image("images\\story1.png",game)
 story_on = Image("images\\story2.png",game)
 
 howto = Image("images\\howtoplay1.png",game)
-howto.resizeBy(-30)
 howto.y = 475
 howto_off = Image("images\\howtoplay1.png",game)
 howto_on = Image("images\\howtoplay2.png",game)
 
 play = Image("images\\play1.png",game)
-play.resizeBy(-30)
 play.y = 550
 play_off = Image("images\\play1.png",game)
 play_on = Image("images\\play2.png",game)
@@ -74,6 +71,8 @@ progressBar.moveTo(10,10)
 heroHPBar = Shape("bar",game,50,10,green)
 heroAmmoBar = Shape("bar",game,2,10,blue)
 bossHPBar = Shape("bar",game,100,10,green)
+
+bop = Sound("sounds\\blaster.wav",1)
 
 asteroids = []
 for index in range(50):
@@ -136,21 +135,19 @@ while not game.over:
     storyImage.draw()
     howtoImage.draw()
     bullet.moveTo(mouse.x, mouse.y)
-    
+
+    story.setImage(story_off.image)
+    howto.setImage(howto_off.image)
+    play.setImage(play_off.image)
     if bullet.collidedWith(play,"rectangle"):
         play.setImage(play_on.image)
-    else:
-        play.setImage(play_off.image)
-        
-    if bullet.collidedWith(story,"rectangle"):
+        bop.play()
+    elif bullet.collidedWith(story,"rectangle"):
         story.setImage(story_on.image)
-    else:
-        story.setImage(story_off.image)
-        
-    if bullet.collidedWith(howto,"rectangle"):
+        bop.play()
+    elif bullet.collidedWith(howto,"rectangle"):
         howto.setImage(howto_on.image)
-    else:
-        howto.setImage(howto_off.image)
+        bop.play()
     
     if storyImage.visible and mouse.LeftClick:
         storyImage.visible = False
