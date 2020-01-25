@@ -22,6 +22,15 @@ def controls():
     heroHPBar.width = hero.health / 2
     heroAmmoBar.moveTo(hero.x - 30, hero.y + 70)
     heroAmmoBar.width = hero.ammo * 2
+
+def positionObjects(objects):
+    for index in range(len(objects)):
+        x = randint(100,700)
+        y = randint(100, 5000)
+        objects[index].moveTo(x,-y)
+        s = randint(4,8)
+        objects[index].setSpeed(s,180)
+        objects[index].visible = True
       
 #Game Program
 game = Game(800,600,"Delta Fighter")
@@ -56,8 +65,16 @@ howtoImage.visible = False
 boss = Image("images\\aliensh.png",game)
 boss.y = -100
 boss.setSpeed(0.5,180)
+
 hero = Animation("images\\hero2.png",3,game,288 / 3, 96, 2)
 
+gameover = Image("images\\gameover.png",game)
+gameover.y = 100
+
+mission_accomplished = Image("images\\mission_accomplished.png",game)
+mission_accomplished.resizeBy(-25)
+mission_failed = Image("images\\mission_failed.png",game)
+mission_failed.resizeBy(-25)
 #game.collisionBorder = "circle"
 
 bullet = Animation("images\\plasmaball1.png",11,game,352 / 11, 32)
@@ -72,57 +89,40 @@ heroHPBar = Shape("bar",game,50,10,green)
 heroAmmoBar = Shape("bar",game,2,10,blue)
 bossHPBar = Shape("bar",game,100,10,green)
 
-bop = Sound("sounds\\blaster.wav",1)
+click = Sound("sounds\\blaster.wav",1)
+boom = Sound("sounds\\Arcade Explo A.wav",2)
+blast = Sound("sounds\\blaster.wav",3)
+collect_ammo = Sound("sounds\\blaster.wav",4)
+collect_hp = Sound("sounds\\blaster.wav",5)
 
 asteroids = []
 for index in range(50):
     a = Animation("images\\asteroid1t.gif", 41, game, 2173 / 41, 52)
     asteroids.append( a )
-for index in range(len(asteroids)):
-    x = randint(100,700)
-    y = randint(100, 5000)
-    asteroids[index].moveTo(x,-y)
-    s = randint(4,8)
-    asteroids[index].setSpeed(s,180)
+positionObjects(asteroids)
 
 plasmaballs = []
 for index in range(20):
     p = Animation("images\\plasmaball1.png",11,game,352 / 11, 32)
     plasmaballs.append(p)
-    
-for index in range(len(plasmaballs)):
-    x = randint(100,700)
-    y = randint(100, 6000)
-    plasmaballs[index].moveTo(x,-y)
-    s = randint(4,8)
-    plasmaballs[index].setSpeed(s,180)
+positionObjects(plasmaballs)
 
 healthpods = []
 for index in range(20):
     h = Animation("images\\firstaid.png",40,game,1285/5,2000/8)
     healthpods.append(h)
-
-for index in range(20):
-    x = randint(100,700)
-    y = randint(100, 6000)
-    healthpods[index].moveTo(x,-y)
-    s = randint(4,8)
-    healthpods[index].setSpeed(s,180)
-    healthpods[index].resizeBy(-85)
+    healthpods[len(healthpods)-1].resizeBy(-85)
+positionObjects(healthpods)
     
 minions = []
 for index in range(40):
     m = Image("images\\alien2.png",game)
     minions.append( m )
-    
-for index in range(len(minions)):
-    x = randint(100,700)
-    y = randint(100, 5000)
-    minions[index].moveTo(x,-y)
-    minions[index].setSpeed(5,180)
-    minions[index].resizeBy(-50)
+    minions[len(minions)-1].resizeBy(-50)
+positionObjects(minions)    
 
 mouse.visible = False
+menu = ""
 #Start Screen
 while not game.over:
     game.processInput()
@@ -141,14 +141,20 @@ while not game.over:
     play.setImage(play_off.image)
     if bullet.collidedWith(play,"rectangle"):
         play.setImage(play_on.image)
-        bop.play()
+        if menu != "play":
+            click.play()
+            menu = "play"
     elif bullet.collidedWith(story,"rectangle"):
         story.setImage(story_on.image)
-        bop.play()
+        if menu != "story":
+            click.play()
+            menu = "story"
     elif bullet.collidedWith(howto,"rectangle"):
         howto.setImage(howto_on.image)
-        bop.play()
-    
+        if menu != "howto":
+            click.play()
+            menu = "howto"
+        
     if storyImage.visible and mouse.LeftClick:
         storyImage.visible = False
     elif bullet.collidedWith(story,"rectangle") and mouse.LeftClick:
@@ -172,14 +178,13 @@ while not game.over:
     progressBar.draw()
     hero.draw()
     explosion.draw(False)
-    #game.drawText("Ammo: " + str(hero.ammo),hero.x - 30, hero.y + 70)
-    #game.drawText("Health: " + str(hero.health),hero.x - 30, hero.y + 50)
     
     for index in range(len(plasmaballs)):
         plasmaballs[index].move()
         if plasmaballs[index].collidedWith(hero):
             hero.ammo += 2
             plasmaballs[index].visible = False
+            collect_ammo.play()
             
     for index in range(len(asteroids)):
         asteroids[index].move()
@@ -192,35 +197,35 @@ while not game.over:
             asteroids[index].visible = False
             explosion.moveTo(hero.x, hero.y)
             explosion.visible = True
+            boom.play()
 
     for index in range(len(healthpods)):
         healthpods[index].move()
         if healthpods[index].collidedWith(hero):
             hero.health += 5
             healthpods[index].visible = False
-            
-    controls()
+            collect_hp.play()
+                
     progressBar.width = 200 - game.level1progress * 4
     if game.level1progress == len(asteroids) or hero.health <= 0:
         game.over = True
-        
+
+    controls()    
     game.update(30)
 
 #Level 2 Screen
 game.over = False
-for index in range(len(plasmaballs)):
-    x = randint(100,700)
-    y = randint(100, 10000)
-    plasmaballs[index].moveTo(x,-y)
-    s = randint(4,8)
-    plasmaballs[index].setSpeed(s,180)
-    plasmaballs[index].visible = True
+bullet.visible = False
+positionObjects(plasmaballs)
 
 while not game.over and hero.health > 0:
     game.processInput()
     game.scrollBackground("down",2)
     hero.draw()
     boss.move()
+    bossHPBar.width = boss.health 
+    bossHPBar.y = boss.bottom
+    bossHPBar.x = boss.x - bossHPBar.width / 2
     bossHPBar.draw()
     bullet.move()
     explosion.draw(False)
@@ -232,28 +237,33 @@ while not game.over and hero.health > 0:
             minions[index].visible = False
             explosion.moveTo(minions[index].x, minions[index].y)
             explosion.visible = True
+            boom.play()
         if minions[index].collidedWith(hero):
             hero.health -= 10
             minions[index].visible = False
             explosion.moveTo(minions[index].x, minions[index].y)
             explosion.visible = True
+            boom.play()
             
     for index in range(len(plasmaballs)):
         plasmaballs[index].move()
         if plasmaballs[index].collidedWith(hero):
             hero.ammo += 1
             plasmaballs[index].visible = False
+            collect_ammo.play()
             
     if keys.Pressed[K_SPACE] and not bullet.visible and hero.ammo > 0 :
         bullet.moveTo( hero.x, hero.y )
         hero.ammo -= 1
         bullet.visible = True
+        blast.play()
         
     if bullet.collidedWith(boss):
         bullet.visible = False
         boss.health -= 5
         explosion.moveTo(bullet.x, bullet.y)
         explosion.visible = True
+        boom.play()
         
     if bullet.y < 0:
         bullet.visible = False
@@ -264,25 +274,40 @@ while not game.over and hero.health > 0:
         
     controls()
     
-    #game.drawText("Ammo: " + str(hero.ammo),hero.x - 30, hero.y + 70)
-    #game.drawText("Health: " + str(hero.health),hero.x - 30, hero.y + 50)
-    #game.drawText("Health: " + str(boss.health),5,5)
-    bossHPBar.width = boss.health 
-    bossHPBar.y = boss.bottom
-    bossHPBar.x = boss.x - bossHPBar.width / 2
     game.update(30)
     
 # Game Over Screen
 game.over = False
+positionObjects(healthpods)
+positionObjects(plasmaballs)
+positionObjects(minions)
+positionObjects(asteroids)
+hero.moveTo(game.width / 2, game.height - hero.height * 2)
 while not game.over:
     game.processInput()
     game.scrollBackground("down",2)
-    game.drawText("Game Over", 120,150, Font(white, 140))
+    gameover.draw()
     if hero.health > 0:
-        msg = "You Win"
+        for h in healthpods:
+            h.move()
+        for p in plasmaballs:
+            p.move()
+        hero.draw()
+        mission_accomplished.draw()
     else:
-        msg = "You Lose"
-    game.drawText(msg, 120,290, Font(white, 140))
+        for m in minions:
+            m.move()
+        for a in asteroids:
+            a.move()
+        explosion.draw(False)
+        if not explosion.visible:
+            x = randint(explosion.width , game.width - explosion.width)
+            y = randint(explosion.height, game.height - explosion.height)
+            explosion.moveTo(x, y)
+            explosion.visible = True
+            
+        mission_failed.draw()
+    
     game.update(30)
 game.quit()
 
