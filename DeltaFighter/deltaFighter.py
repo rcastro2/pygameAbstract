@@ -82,6 +82,7 @@ bullet.visible = True
 bullet.setSpeed(8,0)
 explosion = Animation("images\\explosion1.png",22,game,1254 / 22, 64)
 explosion.visible = False
+explosion2 = Animation("images\\explosion2.png",6,game,750/3,441/2,use_alpha=False)
 
 progressBar = Shape("bar",game,200,20,green)
 progressBar.moveTo(10,10)
@@ -89,11 +90,12 @@ heroHPBar = Shape("bar",game,50,10,green)
 heroAmmoBar = Shape("bar",game,2,10,blue)
 bossHPBar = Shape("bar",game,100,10,green)
 
-click = Sound("sounds\\blaster.wav",1)
-boom = Sound("sounds\\Arcade Explo A.wav",2)
-blast = Sound("sounds\\blaster.wav",3)
-collect_ammo = Sound("sounds\\blaster.wav",4)
-collect_hp = Sound("sounds\\blaster.wav",5)
+select_menu = Sound("sounds\\tick.wav",1)
+explosion_boss = Sound("sounds\\explosion_boss.wav",2)
+explosion_other = Sound("sounds\\explosion_other.wav",3)
+blast = Sound("sounds\\blaster.wav",4)
+collect_ammo = Sound("sounds\\collect_ammo.wav",5)
+collect_hp = Sound("sounds\\collect_hp.wav",6)
 
 asteroids = []
 for index in range(50):
@@ -136,23 +138,24 @@ while not game.over:
     howtoImage.draw()
     bullet.moveTo(mouse.x, mouse.y)
 
+    explosion2.draw()
     story.setImage(story_off.image)
     howto.setImage(howto_off.image)
     play.setImage(play_off.image)
     if bullet.collidedWith(play,"rectangle"):
         play.setImage(play_on.image)
         if menu != "play":
-            click.play()
+            select_menu.play()
             menu = "play"
     elif bullet.collidedWith(story,"rectangle"):
         story.setImage(story_on.image)
         if menu != "story":
-            click.play()
+            select_menu.play()
             menu = "story"
     elif bullet.collidedWith(howto,"rectangle"):
         howto.setImage(howto_on.image)
         if menu != "howto":
-            click.play()
+            select_menu.play()
             menu = "howto"
         
     if storyImage.visible and mouse.LeftClick:
@@ -197,7 +200,7 @@ while not game.over:
             asteroids[index].visible = False
             explosion.moveTo(hero.x, hero.y)
             explosion.visible = True
-            boom.play()
+            explosion_other.play()
 
     for index in range(len(healthpods)):
         healthpods[index].move()
@@ -237,13 +240,13 @@ while not game.over and hero.health > 0:
             minions[index].visible = False
             explosion.moveTo(minions[index].x, minions[index].y)
             explosion.visible = True
-            boom.play()
+            explosion_other.play()
         if minions[index].collidedWith(hero):
             hero.health -= 10
             minions[index].visible = False
             explosion.moveTo(minions[index].x, minions[index].y)
             explosion.visible = True
-            boom.play()
+            explosion_other.play()
             
     for index in range(len(plasmaballs)):
         plasmaballs[index].move()
@@ -263,7 +266,7 @@ while not game.over and hero.health > 0:
         boss.health -= 5
         explosion.moveTo(bullet.x, bullet.y)
         explosion.visible = True
-        boom.play()
+        explosion_boss.play()
         
     if bullet.y < 0:
         bullet.visible = False

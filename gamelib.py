@@ -10,7 +10,7 @@ pygame.joystick.init()
 black, white, light_gray, gray, dark_gray = (0,0,0), (255,255,255), (170,170,170), (128,128,128), (85,85,85)
 red, green, blue = (255,0,0), (0,255,0), (0,0,255)
 yellow, magenta, cyan = (255,255,0), (255,0,255), (0,255,255)
-orange, brown, pink = (255,128,0), (255,0, 128), (102,51,0)
+orange, pink, brown = (255,128,0), (255,0, 128), (102,51,0)
 N,NE,E,SE,S,SW,W,NW,C = 0,1,2,3,4,5,6,7,8
 
 class Mouse(object):
@@ -83,10 +83,10 @@ class Sound(object):
         self.chan = chan
         self.file = pygame.mixer.Sound(path)
 
-    def play(self,time=0):
+    def play(self,block=False,time=0):
         #time is measured in ms
         c = pygame.mixer.Channel(self.chan)
-        if not c.get_busy():
+        if not c.get_busy() or not block:
                 c.play(self.file,maxtime=time)
 
 class Game(object):
@@ -268,6 +268,7 @@ class GameObject(object):
         self.x, self.y, self.dx, self.dy, self.dxsign, self.dysign = self.game.width/2,self.game.height/2,0,0,1,1
         self.angle, self.da = 0,0
         self.rotate,self.rotate_angle, self.rda = "still",0,0
+        self.rect = None
         self.speed = 0
         self.bounce = False
         self.collisionBorder = None
@@ -292,8 +293,7 @@ class GameObject(object):
         
     def collidedWith(self,obj,shape="circle"):
         if (obj.visible or isinstance(obj,Mouse)) and self.visible:
-            self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
-            self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
+            self.updateRect()
         
             if shape =="circle":
                 dx = self.x - obj.x
@@ -325,8 +325,8 @@ class GameObject(object):
         self.calculateSpeedDeltas()
         #self.move()
         
-    def stop(self):
-        self.speed *= 0.95
+    def stop(self, drag=5):
+        self.speed *= 1 - drag / 100
         self.calculateSpeedDeltas()
         
     def rotateBy(self,angle=0,direction="right"):
@@ -371,6 +371,10 @@ class GameObject(object):
             return math.degrees(self.angle)
         return self.angle
 
+    def updateRect(self):
+        self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
+        self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
+
     def displayCollisionBorder(self):
         if self.collisionBorder == "circle" or self.game.collisionBorder == "circle":
             pygame.draw.circle(self.game.screen,red,(int(self.x),int(self.y)),int((self.width/2+self.height/2)/2),1)
@@ -392,9 +396,8 @@ class Image(GameObject):
                         
         self.width,self.original_width,self.oldwidth = self.image.get_width(),self.image.get_width(),self.image.get_width()
         self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
-        self.rect = None
         self.original, self.src = self.image, self.image
-        self.left, self.top, self.right, self.bottom = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
+        self.updateRect()
         self.health = 100
         self.damage = 0
 
@@ -413,8 +416,7 @@ class Image(GameObject):
         if self.visible:
            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
 
-        self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
-        self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
+        self.updateRect()
         self.displayCollisionBorder()
 
 
@@ -531,20 +533,49 @@ class Animation(Image):
         factor = 1 + pct / 100.0
         self.resizeTo(self.width * factor, self.height * factor)
 
-class Polygon(GameObject):
-    def __init__(self,side,size,game,color=(0,0,0)):
+class Shape(GameObject):
+    def __init__(self,shape,game,arg1,arg2,color=(0,0,0)):
         GameObject.__init__(self,game)
         self.game = game
-        self.side, self.size, self.color = side, size, color
-        self.width, self.height = self.size * 2, self.size * 2
-        self.reference_angle = 2 * math.pi / side
-        self.points = []
-        self.updatePoints(True)
+        self.shape = shape
+        if shape == "polygon":
+             self.side, self.size, self.color = arg1, arg2, color
+             self.width, self.height = self.size * 2, self.size * 2
+             self.reference_angle = 2 * math.pi / self.side
+             self.angle_offset = math.pi / self.side
+             self.points = []
+             self.updatePoints(True)
+        elif shape == "bar":
+             self.width, self.height, self.color = arg1, arg2, color
+             self.left, self.top, self.right, self.bottom  = self.x, self.y, self.x + self.width, self.y + self.height
+             self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
+        elif shape == "rectangle":
+             self.side, self.width, self.height, self.color = 4, arg1, arg2, color
+             self.size = int(math.sqrt(self.width**2 + self.height**2) / 2)
+             angle1 = math.pi - 2*math.atan(self.width/self.height)
+             angle2 = math.pi - 2*math.atan(self.height/self.width)
+             self.reference_angle = [angle1/2,angle2,angle1,angle2]
+             self.points = []
+             self.updatePoints(True)
+        elif shape == "ellipse":
+             self.width, self.height, self.color = arg1, arg2, color
+             self.left, self.top, self.right, self.bottom  = self.x-self.width/2,self.y-self.height/2, self.x + self.width/2, self.y + self.height/2
+             self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
 
     def draw(self):
         if self.visible:
-             self.updatePoints()
-             pygame.draw.polygon(self.game.screen,self.color,self.points)
+             if self.shape == "polygon":
+                  self.updatePoints()
+                  pygame.draw.polygon(self.game.screen,self.color,self.points)
+             elif self.shape == "bar":
+                  self.updateRect(self.x, self.y, self.x + self.width, self.y + self.height)
+                  pygame.draw.rect(self.game.screen,self.color,self.rect)
+             elif self.shape == "rectangle":
+                  self.updatePoints()
+                  pygame.draw.polygon(self.game.screen,self.color,self.points)
+             elif self.shape == "ellipse":
+                  self.updateRect()
+                  pygame.draw.ellipse(self.game.screen,self.color,self.rect)
              self.displayCollisionBorder()
              
     def calculateSpeedDeltas(self):
@@ -552,15 +583,26 @@ class Polygon(GameObject):
         self.dy = self.speed * math.sin(self.angle - math.pi)
              
     def updatePoints(self,empty=False):
-        xcoord, ycoord = [], []        
+        xcoord, ycoord = [], []
+        theta = 0
         for index in range(self.side):
-             x = self.x + self.size * math.cos(self.rotate_angle + self.reference_angle * index)
-             y = self.y + self.size * math.sin(self.rotate_angle + self.reference_angle * index)
+             if self.shape == "polygon":
+                  x = self.x + self.size * math.cos(self.rotate_angle + self.reference_angle * index + self.angle_offset)
+                  y = self.y + self.size * math.sin(self.rotate_angle + self.reference_angle * index + self.angle_offset)
+             else:
+                  theta += self.reference_angle[index]
+                  x = self.x + self.size * math.cos(self.rotate_angle + theta)
+                  y = self.y + self.size * math.sin(self.rotate_angle + theta)
              xcoord.append(x)
              ycoord.append(y)
              if not empty:
                   self.points[index] = (x,y)
              else:
                   self.points.append( (x,y) )
-        self.left, self.top, self.right, self.bottom  = min(xcoord),min(ycoord),max(xcoord),max(ycoord)
+        self.updateRect(min(xcoord),min(ycoord),max(xcoord),max(ycoord))
+
+    def updateRect(self,left=None, top=None, right=None, bottom=None):
+        if left == None:
+             left, top, right, bottom= self.x-self.width/2, self.y-self.height/2, self.x + self.width/2, self.y + self.height/2    
+        self.left, self.top, self.right, self.bottom  = left, top, right, bottom
         self.rect = pygame.Rect(self.left,self.top,self.width,self.height)
