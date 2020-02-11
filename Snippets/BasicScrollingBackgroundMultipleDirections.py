@@ -21,9 +21,9 @@ while not game.over:
 
     game.drawBackground()
     if keys.Pressed[K_LEFT]:
-        game.scrollBackground("left",8)
-    if keys.Pressed[K_RIGHT]:
         game.scrollBackground("right",8)
+    if keys.Pressed[K_RIGHT]:
+        game.scrollBackground("left",8)
     if keys.Pressed[K_UP]:
         game.scrollBackground("down",8)
     if keys.Pressed[K_DOWN]:
