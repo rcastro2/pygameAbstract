@@ -25,10 +25,10 @@ while not game.over:
     bk.draw()
     if keys.Pressed[K_LEFT]:
         chunliwalk.nextFrame()
-        chunliwalk.moveX(-8)
+        chunliwalk.x -= 8
     elif keys.Pressed[K_RIGHT]:
         chunliwalk.prevFrame()
-        chunliwalk.moveX(8)
+        chunliwalk.x += 8
     elif keys.Pressed[K_e]:
         chunliultra.moveTo(chunliwalk.x - 20,chunliwalk.y - 50)
         chunliultra.draw()

@@ -24,6 +24,6 @@ class Snake(object):
     def eats(self,obj):
         return self.snake[0].collidedWith(obj)
     def move(self,dx,dy):
-        self.snake[0].moveX(dx)
-        self.snake[0].moveY(dy)
+        self.snake[0].x += dx
+        self.snake[0].y += dy
 

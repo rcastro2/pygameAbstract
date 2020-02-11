@@ -21,9 +21,9 @@ while not game.over:
     paddle.draw()
     ball.move(True)
     if keys.Pressed[K_LEFT] and paddle.left > game.left:
-        paddle.moveX(-4)
+        paddle.x -=4 
     elif keys.Pressed[K_RIGHT] and paddle.right < game.right:
-        paddle.moveX(4)
+        paddle.x += 4
 
     if ball.bottom > paddle.top + 5 and ball.right > paddle.left and ball.left < paddle.right:
         ball.changeYSpeed()        

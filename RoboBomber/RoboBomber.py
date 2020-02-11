@@ -17,7 +17,7 @@ robot = Animation("images\\robot\\robot ",30,game,frate=2)
 robot.moveTo(game.width / 2, game.height - 60)
 
 explosion = Animation("images\\explosion.png",22,game,57,64)
-explosion.makeVisible(False)
+explosion.visible = False
 
 volcanoes = []
 bomb = Animation("images\\bomb\\bomb ",6,game,frate=4)
@@ -34,13 +34,13 @@ while not game.over:
     robot.draw()
     explosion.draw(False)
     if keys.Pressed[K_LEFT] and robot.left > game.left:
-        robot.moveX(-4)
+        robot.x -= 4
     elif keys.Pressed[K_RIGHT] and robot.right < game.right:
-        robot.moveX(4)
+        robot.x += 4
 
     if robot.collidedWith(bomb):
         explosion.moveTo(robot.x, robot.y)
-        explosion.makeVisible(True)
+        explosion.visible = True
         game.score += 10
         bomb.moveTo(randint(100,800),-100)
         bomb.speed += 0.25

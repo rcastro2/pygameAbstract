@@ -80,9 +80,13 @@ mission_failed.resizeBy(-25)
 bullet = Animation("images\\plasmaball1.png",11,game,352 / 11, 32)
 bullet.visible = True
 bullet.setSpeed(8,0)
-explosion = Animation("images\\explosion1.png",22,game,1254 / 22, 64)
+explosion = Animation("images\\explosion4.png",20,game,640 / 5, 512 / 4)
 explosion.visible = False
-explosion2 = Animation("images\\explosion2.png",6,game,750/3,441/2,use_alpha=False)
+explosion2 = Animation("images\\explosion2.png",14,game,512/4,512/4)
+explosion.visible = False
+explosion3 = Animation("images\\explosion3.jpg",12,game,512/4,512/4,0.5,use_alpha=False)
+explosion3.resizeBy(-50)
+explosion3.visible = False
 
 progressBar = Shape("bar",game,200,20,green)
 progressBar.moveTo(10,10)
@@ -125,6 +129,15 @@ positionObjects(minions)
 
 mouse.visible = False
 menu = ""
+arkanoid = Font(yellow,48,blue,"Arka_solid.ttf")
+storyScreen = '''
+The evil emperor has vowed\n
+to destroy the Earth and deplete it of\n
+all its resources.  It is your jon\n
+commander to defend against the\n
+alien invasoin.\n
+          Good Luck
+'''
 #Start Screen
 while not game.over:
     game.processInput()
@@ -138,10 +151,10 @@ while not game.over:
     howtoImage.draw()
     bullet.moveTo(mouse.x, mouse.y)
 
-    explosion2.draw()
     story.setImage(story_off.image)
     howto.setImage(howto_off.image)
     play.setImage(play_off.image)
+    game.drawText("Hello",0,0,arkanoid)
     if bullet.collidedWith(play,"rectangle"):
         play.setImage(play_on.image)
         if menu != "play":
@@ -232,14 +245,16 @@ while not game.over and hero.health > 0:
     bossHPBar.draw()
     bullet.move()
     explosion.draw(False)
+    explosion2.draw(False)
+    explosion3.draw(False)
     
     for index in range(len(minions)):
         minions[index].move()
         if minions[index].collidedWith(bullet):
             bullet.visible = False
             minions[index].visible = False
-            explosion.moveTo(minions[index].x, minions[index].y)
-            explosion.visible = True
+            explosion3.moveTo(minions[index].x, minions[index].y)
+            explosion3.visible = True
             explosion_other.play()
         if minions[index].collidedWith(hero):
             hero.health -= 10
@@ -264,8 +279,8 @@ while not game.over and hero.health > 0:
     if bullet.collidedWith(boss):
         bullet.visible = False
         boss.health -= 5
-        explosion.moveTo(bullet.x, bullet.y)
-        explosion.visible = True
+        explosion2.moveTo(bullet.x, bullet.y)
+        explosion2.visible = True
         explosion_boss.play()
         
     if bullet.y < 0:

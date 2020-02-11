@@ -20,11 +20,11 @@ def drawScore():
 #####################
 def intro():
     titleA = Image("images\\title1a.png",game)
-    titleA.moveY(-110)
+    titleA.y -= 110
     titleB = Image("images\\title1b.png",game)
-    titleB.moveY(-10)
+    titleB.y -=10
 
-    platforms[0].moveY(150)
+    platforms[0].y += 150
     hero.moveTo(platforms[0].x,platforms[0].y-platforms[0].height/2-hero.height/2 + 18)
 
     platforms[0].setSpeed(6,90)
