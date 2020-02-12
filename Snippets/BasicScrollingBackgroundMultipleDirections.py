@@ -9,27 +9,30 @@ simply delete them.
 
 from gamelib import *
 
-game = Game(800,800,"Scrolling Background")
+game = Game(600,600,"Scrolling Background")
 
 bk = Image("images\\grid.png",game)
 bk.resizeTo(game.width,game.height)
 
 game.setBackground(bk)
+#game.collisionBorder = "rectangle"
 
 while not game.over:
     game.processInput()
 
     game.drawBackground()
     if keys.Pressed[K_LEFT]:
-        game.scrollBackground("right",8)
+        game.scrollBackground("right",4)
     if keys.Pressed[K_RIGHT]:
-        game.scrollBackground("left",8)
+        game.scrollBackground("left",4)
     if keys.Pressed[K_UP]:
-        game.scrollBackground("down",8)
+        game.scrollBackground("down",4)
     if keys.Pressed[K_DOWN]:
-        game.scrollBackground("up",8)
+        game.scrollBackground("up",4)
+    for x in range(3):
+        game.drawText(str(game.backgroundXY[x]),5,5 + x * 15,Font(black))
         
-    game.update(30)
+    game.update(60)
 game.quit()
 
     
