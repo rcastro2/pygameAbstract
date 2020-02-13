@@ -124,30 +124,34 @@ class Game(object):
                  for c in range(3):
                       self.backgroundXY[r][c]["x"] -= amt
                       if self.backgroundXY[r][c]["x"] + self.background.width  / 2 <= 0:
-                           self.backgroundXY[r][c]["x"] = self.backgroundXY[r][(c+2)%3]["x"] + self.background.width
+                           self.backgroundXY[r][c]["x"] = self.backgroundXY[r][(c+2)%3]["x"] + self.background.width - amt
                       self.background.moveTo(self.backgroundXY[r][c]["x"],self.backgroundXY[r][c]["y"])
         elif direction == "right":
              for r in range(3):
                  for c in [2,1,0]:
                       self.backgroundXY[r][c]["x"] += amt
                       if self.backgroundXY[r][c]["x"] - self.background.width  / 2 >= self.width:
-                           self.backgroundXY[r][c]["x"] = self.backgroundXY[r][(c-2)%3]["x"] - self.background.width
+                           self.backgroundXY[r][c]["x"] = self.backgroundXY[r][(c-2)%3]["x"] - self.background.width + amt
                       self.background.moveTo(self.backgroundXY[r][c]["x"],self.backgroundXY[r][c]["y"])
         elif direction == "up":
             for c in range(3):
                  for r in range(3):
                       self.backgroundXY[r][c]["y"] -= amt
                       if self.backgroundXY[r][c]["y"] + self.background.height  / 2 <= 0:
-                           self.backgroundXY[r][c]["y"] = self.backgroundXY[(r+2)%3][c]["y"] + self.background.height
+                           self.backgroundXY[r][c]["y"] = self.backgroundXY[(r+2)%3][c]["y"] + self.background.height - amt
                       self.background.moveTo(self.backgroundXY[r][c]["x"],self.backgroundXY[r][c]["y"])
         elif direction == "down":
             for c in range(3):
                  for r in range(2,-1,-1):
                       self.backgroundXY[r][c]["y"] += amt
                       if self.backgroundXY[r][c]["y"] - self.background.height  / 2 >= self.height:
-                           self.backgroundXY[r][c]["y"] = self.backgroundXY[(r-2)%3][c]["y"] - self.background.height
+                           self.backgroundXY[r][c]["y"] = self.backgroundXY[(r-2)%3][c]["y"] - self.background.height + amt
                       self.background.moveTo(self.backgroundXY[r][c]["x"],self.backgroundXY[r][c]["y"])
-
+        elif direction == "still":
+            for r in range(3):
+                 for c in range(3):    
+                      self.background.moveTo(self.backgroundXY[r][c]["x"],self.backgroundXY[r][c]["y"])
+                      
     def drawText(self,msg,x,y,newFont = None):
         if newFont == None:
              newFont = self.font
