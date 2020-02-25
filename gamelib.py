@@ -94,9 +94,9 @@ class Game(object):
         self.width,self.height = w,h
         pygame.display.set_caption(title)
         self.screen = pygame.display.set_mode([w,h])
-        self.background,self.backgroundXY, self.backgroundXYSet = None, [],False
         self.fps, self.time, self.clock = 20, time + 1, pygame.time.Clock()
         self.left, self.top, self.right, self.bottom = 0,0,w,h
+        self.debug = True
         self.collisionBorder = None
         self.over = False
         self.score = 0
@@ -107,7 +107,6 @@ class Game(object):
         self.screen.fill(color)
         
     def setBackground(self,bkGraphics):
-        self.backgroundXYSet = None
         self.background = bkGraphics
         self.backgroundXY = [[],[],[]]
         for r in range(3):
@@ -204,8 +203,11 @@ class Game(object):
         keys.Pressed = pygame.key.get_pressed()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit(0)
+                if self.debug:
+                     self.over = True
+                else:
+                     pygame.quit()
+                     sys.exit(0)
                 
             if event.type == pygame.KEYDOWN:
                 keys.Down = event.key
