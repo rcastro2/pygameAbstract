@@ -31,10 +31,44 @@ def positionObjects(objects):
         s = randint(4,8)
         objects[index].setSpeed(s,180)
         objects[index].visible = True
-      
+def drawScreenText(text, x, y, rate = 10):
+    font_size = 36
+    arkanoid = Font(blue,font_size,white,"ARKANOID.ttf")
+    text_complete = False
+    tick,offset,line_height,current_y = 0,0,font_size + 10, y
+    lines = []
+    while not game.over:
+        game.processInput()
+        game.scrollBackground("down",2)
+        title.draw()
+        for index in range(len(lines)):
+            game.drawText(lines[index],x,y + line_height * index,arkanoid)
+        bullet.moveTo(mouse.x, mouse.y)
+        if not text_complete:  
+            if text[offset] == "\n":
+                lines.append(text[:offset])
+                current_y += line_height
+                text = text[offset+1:]
+                offset = 0
+            else:
+                game.drawText(text[:offset+1],x,current_y,arkanoid)
+
+            if tick % rate == 0:
+                offset += 1
+                
+            if offset == len(text):
+                lines.append(text[:offset])
+                text_complete = True
+        else:
+            if mouse.LeftClick:
+                game.over = True
+        
+        game.update(20)
+    game.over = False
+        
 #Game Program
 game = Game(800,600,"Delta Fighter")
-
+game.debug = False
 bk = Animation("images\\field_5.png",5,game,1000,1000)
 game.setBackground(bk)
 
@@ -55,12 +89,6 @@ play = Image("images\\play1.png",game)
 play.y = 550
 play_off = Image("images\\play1.png",game)
 play_on = Image("images\\play2.png",game)
-
-storyImage = Image("images\\storyImage.png",game)
-storyImage.visible = False
-
-howtoImage = Image("images\\howtoImage.png",game)
-howtoImage.visible = False
 
 boss = Image("images\\aliensh.png",game)
 boss.y = -100
@@ -129,15 +157,9 @@ positionObjects(minions)
 
 mouse.visible = False
 menu = ""
-arkanoid = Font(yellow,48,blue,"Arka_solid.ttf")
-storyScreen = '''
-The evil emperor has vowed\n
-to destroy the Earth and deplete it of\n
-all its resources.  It is your jon\n
-commander to defend against the\n
-alien invasoin.\n
-          Good Luck
-'''
+
+storyScreen = '''The evil emperor has vowed to\ndestroy the Earth and deplete it\nof all its resources.  It is your\njob commander to defend against\nthe alien invasion.\n \n \n            Good Luck'''
+howScreen = '''Control the hero with the arrow\nkeys and shoot with the space bar.\nIn Level 1 you must pick up ammo\nand health while dodging the\nasteroids.  In Level 2, you must\nEmperor Zerg.\n \n            Good Luck'''
 #Start Screen
 while not game.over:
     game.processInput()
@@ -147,14 +169,12 @@ while not game.over:
     howto.draw()
     play.draw()
     hero.draw()
-    storyImage.draw()
-    howtoImage.draw()
     bullet.moveTo(mouse.x, mouse.y)
 
     story.setImage(story_off.image)
     howto.setImage(howto_off.image)
     play.setImage(play_off.image)
-    game.drawText("Hello",0,0,arkanoid)
+
     if bullet.collidedWith(play,"rectangle"):
         play.setImage(play_on.image)
         if menu != "play":
@@ -171,14 +191,10 @@ while not game.over:
             select_menu.play()
             menu = "howto"
         
-    if storyImage.visible and mouse.LeftClick:
-        storyImage.visible = False
-    elif bullet.collidedWith(story,"rectangle") and mouse.LeftClick:
-        storyImage.visible = True
-    elif howtoImage.visible and mouse.LeftClick:
-        howtoImage.visible = False  
+    if bullet.collidedWith(story,"rectangle") and mouse.LeftClick:
+        drawScreenText(storyScreen, 15, 180)
     elif bullet.collidedWith(howto,"rectangle") and mouse.LeftClick:
-        howtoImage.visible = True
+        drawScreenText(howScreen, 15, 180)
     elif bullet.collidedWith(play,"rectangle") and mouse.LeftClick:
         game.over = True
 
