@@ -31,6 +31,7 @@ def positionObjects(objects):
         s = randint(4,8)
         objects[index].setSpeed(s,180)
         objects[index].visible = True
+        
 def drawScreenText(text, x, y, rate = 10):
     font_size = 36
     arkanoid = Font(blue,font_size,white,"ARKANOID.ttf")
@@ -43,6 +44,7 @@ def drawScreenText(text, x, y, rate = 10):
         title.draw()
         for index in range(len(lines)):
             game.drawText(lines[index],x,y + line_height * index,arkanoid)
+            
         bullet.moveTo(mouse.x, mouse.y)
         if not text_complete:  
             if text[offset] == "\n":
@@ -61,6 +63,7 @@ def drawScreenText(text, x, y, rate = 10):
                 text_complete = True
         else:
             if mouse.LeftClick:
+                select_menu.play()
                 game.over = True
         
         game.update(20)
@@ -122,12 +125,14 @@ heroHPBar = Shape("bar",game,50,10,green)
 heroAmmoBar = Shape("bar",game,2,10,blue)
 bossHPBar = Shape("bar",game,100,10,green)
 
-select_menu = Sound("sounds\\tick.wav",1)
+hover_menu = Sound("sounds\\metal.wav",1)
+select_menu = Sound("sounds\\laser.wav",7)
 explosion_boss = Sound("sounds\\explosion_boss.wav",2)
 explosion_other = Sound("sounds\\explosion_other.wav",3)
 blast = Sound("sounds\\blaster.wav",4)
 collect_ammo = Sound("sounds\\collect_ammo.wav",5)
 collect_hp = Sound("sounds\\collect_hp.wav",6)
+game.setMusic("sounds\\start_screen.mp3")
 
 asteroids = []
 for index in range(50):
@@ -161,6 +166,7 @@ menu = ""
 storyScreen = '''The evil emperor has vowed to\ndestroy the Earth and deplete it\nof all its resources.  It is your\njob commander to defend against\nthe alien invasion.\n \n \n            Good Luck'''
 howScreen = '''Control the hero with the arrow\nkeys and shoot with the space bar.\nIn Level 1 you must pick up ammo\nand health while dodging the\nasteroids.  In Level 2, you must\nEmperor Zerg.\n \n            Good Luck'''
 #Start Screen
+game.playMusic()
 while not game.over:
     game.processInput()
     game.scrollBackground("down",2)
@@ -178,24 +184,29 @@ while not game.over:
     if bullet.collidedWith(play,"rectangle"):
         play.setImage(play_on.image)
         if menu != "play":
-            select_menu.play()
+            hover_menu.play()
             menu = "play"
     elif bullet.collidedWith(story,"rectangle"):
         story.setImage(story_on.image)
         if menu != "story":
-            select_menu.play()
+            hover_menu.play()
             menu = "story"
     elif bullet.collidedWith(howto,"rectangle"):
         howto.setImage(howto_on.image)
         if menu != "howto":
-            select_menu.play()
+            hover_menu.play()
             menu = "howto"
+    else:
+        menu = ""
         
     if bullet.collidedWith(story,"rectangle") and mouse.LeftClick:
+        select_menu.play()
         drawScreenText(storyScreen, 15, 180)
     elif bullet.collidedWith(howto,"rectangle") and mouse.LeftClick:
+        select_menu.play()
         drawScreenText(howScreen, 15, 180)
     elif bullet.collidedWith(play,"rectangle") and mouse.LeftClick:
+        select_menu.play()
         game.over = True
 
     game.update(30)
@@ -249,7 +260,7 @@ while not game.over:
 game.over = False
 bullet.visible = False
 positionObjects(plasmaballs)
-
+select_menu.play()
 while not game.over and hero.health > 0:
     game.processInput()
     game.scrollBackground("down",2)
@@ -317,6 +328,11 @@ positionObjects(plasmaballs)
 positionObjects(minions)
 positionObjects(asteroids)
 hero.moveTo(game.width / 2, game.height - hero.height * 2)
+if hero.health > 0:
+    game.setMusic("sounds\\gameover_success.wav")
+else:
+    game.setMusic("sounds\\gameover_failed.wav")
+game.playMusic()
 while not game.over:
     game.processInput()
     game.scrollBackground("down",2)
