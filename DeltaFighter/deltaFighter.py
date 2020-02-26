@@ -126,6 +126,7 @@ heroAmmoBar = Shape("bar",game,2,10,blue)
 bossHPBar = Shape("bar",game,100,10,green)
 
 hover_menu = Sound("sounds\\metal.wav",1)
+hover_menu.setVolume(50)
 select_menu = Sound("sounds\\laser.wav",7)
 explosion_boss = Sound("sounds\\explosion_boss.wav",2)
 explosion_other = Sound("sounds\\explosion_other.wav",3)
@@ -133,7 +134,7 @@ blast = Sound("sounds\\blaster.wav",4)
 collect_ammo = Sound("sounds\\collect_ammo.wav",5)
 collect_hp = Sound("sounds\\collect_hp.wav",6)
 game.setMusic("sounds\\start_screen.mp3")
-
+game.setVolume(10)
 asteroids = []
 for index in range(50):
     a = Animation("images\\asteroid1t.gif", 41, game, 2173 / 41, 52)

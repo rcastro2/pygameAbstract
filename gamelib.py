@@ -80,9 +80,13 @@ class Font(object):
 
 class Sound(object):
     def __init__(self,path,chan):
+        #Channels range from 0 to 7
         self.chan = chan
         self.file = pygame.mixer.Sound(path)
 
+    def setVolume(self,level):
+        self.file.set_volume(level / 100)
+        
     def play(self,block=False,time=0):
         #time is measured in ms
         c = pygame.mixer.Channel(self.chan)
@@ -176,6 +180,9 @@ class Game(object):
 
     def playMusic(self):
         pygame.mixer.music.play(-1,0.0)
+
+    def setVolume(self,level):
+        pygame.mixer.music.set_volume(level / 100)
 
     def stopMusic(self):
         pygame.mixer.music.stop()
