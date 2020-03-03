@@ -425,7 +425,6 @@ class Image(GameObject):
         self.updateRect()
         self.displayCollisionBorder()
 
-
     def resizeTo(self,w,h):
         self.original = pygame.transform.scale(self.src,(int(w),int(h)))
         self.image = self.original
@@ -435,6 +434,15 @@ class Image(GameObject):
     def resizeBy(self,pct):
         factor = 1 + pct/100.0
         self.resizeTo(int(self.width * factor), int(self.height * factor))
+
+    def flip(self,direction):
+        v,h = False,False
+        if "V" in direction.upper() and "O" not in direction.upper():
+             v = True
+        if "H" in direction.upper() and "O" not in direction.upper():
+             h = True
+        self.image = self.original
+        self.image = pygame.transform.flip(self.image,v,h)
 
     def isOffScreen(self,side="all"):
         offscreen = False
