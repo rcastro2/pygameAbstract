@@ -14,6 +14,8 @@ game = Game(800,600,"Game",60)
 hero = Animation("images\\herostanding.png",5,game,960/5,128,frate=4)
 hero_standing = Animation("images\\herostanding.png",5,game,960/5,128)
 hero_walking = Animation("images\\herowalking.png",12,game,960/5,384/3)
+hero_slashing = Animation("images\\SlashSprite.png",12,game,1875/5,750/3)
+hero_slashing.resizeBy(-48)
 hero.collisionBorder = "rectangle"
 
 while not game.over:
@@ -31,6 +33,9 @@ while not game.over:
         hero.images = hero_walking.images
         hero.x -= 2
         hero.offsetX = -75
+    elif keys.Pressed[K_SPACE]:
+        hero.images = hero_slashing.images
+        hero.offsetX = -50
     else:
         hero.images = hero_standing.images
         if hero.flipV:
