@@ -13,17 +13,20 @@ game = Game(800,600,"Game",60)
 
 zombie = Image("images\\zombie.png",game)
 zombie.resizeBy(-80)
+hero = Animation("images\\glitch_walker.png",16,game,832/8,228/2)
 
 while not game.over:
     game.processInput()
 
     game.clearBackground(white)
     zombie.draw()
-    
+    hero.draw()
     if keys.Pressed[K_LEFT]:
+        hero.flipV = True
         zombie.flipV = False
         zombie.x -= 2
     if keys.Pressed[K_RIGHT]:
+        hero.flipV = False
         zombie.flipV = True
         zombie.x += 2
     if keys.Pressed[K_UP]:

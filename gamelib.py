@@ -515,7 +515,7 @@ class Animation(Image):
         
     def draw(self, loop = True):
         if self.visible:
-            Image.setImage(self, self.images[self.f])
+            Image.setImage(self, self.images[self.f % len(self.images)])
             Image.draw(self)
             self.ftick += 1
             if self.ftick % self.frate == 0 and self.playAnim:
