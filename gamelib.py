@@ -403,7 +403,7 @@ class Image(GameObject):
         self.width,self.original_width,self.oldwidth = self.image.get_width(),self.image.get_width(),self.image.get_width()
         self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
         self.original, self.src = self.image, self.image
-        self.flipV,self.flipH = False,False
+        self.flipV,self.flipH, self.offsetX, self.offsetY = False,False,0,0
         self.updateRect()
         self.health = 100
         self.damage = 0
@@ -423,7 +423,7 @@ class Image(GameObject):
                 self.image = pygame.transform.rotate(self.image,self.rotate_angle * 180 / math.pi)
                 self.width,self.height = self.image.get_width(),self.image.get_height()
                 self.oldwidth,self.oldheight = self.width,self.height
-            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
+            self.game.screen.blit(self.image, [self.x - self.width/2 + self.offsetX,self.y - self.height/2 + self.offsetY])
 
         self.updateRect()
         self.displayCollisionBorder()
