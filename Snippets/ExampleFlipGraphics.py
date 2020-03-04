@@ -21,11 +21,13 @@ while not game.over:
     zombie.draw()
     
     if keys.Pressed[K_LEFT]:
-        zombie.flip("vo")
+        zombie.flipV = False
         zombie.x -= 2
     if keys.Pressed[K_RIGHT]:
-        zombie.flip("v")
+        zombie.flipV = True
         zombie.x += 2
+    if keys.Pressed[K_UP]:
+        zombie.rotateBy(2)
 
     game.update(30)
 game.quit()

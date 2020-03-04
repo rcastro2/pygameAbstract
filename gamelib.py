@@ -403,6 +403,7 @@ class Image(GameObject):
         self.width,self.original_width,self.oldwidth = self.image.get_width(),self.image.get_width(),self.image.get_width()
         self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
         self.original, self.src = self.image, self.image
+        self.flipV,self.flipH = False,False
         self.updateRect()
         self.health = 100
         self.damage = 0
@@ -412,15 +413,17 @@ class Image(GameObject):
         self.original = image
 
     def draw(self):
-        if self.width != self.oldwidth or self.height != self.oldheight:
-            self.resizeTo(self.width,self.height)
-        if self.rotate == "left" or self.rotate == "right" or self.rotate == "to":
-            self.image = self.original
-            self.image = pygame.transform.rotate(self.image,self.rotate_angle * 180 / math.pi)
-            self.width,self.height = self.image.get_width(),self.image.get_height()
-            self.oldwidth,self.oldheight = self.width,self.height
         if self.visible:
-           self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
+            self.image = self.original
+            if self.width != self.oldwidth or self.height != self.oldheight:
+                self.resizeTo(self.width,self.height)
+            if self.flipV or self.flipH:
+                self.image = pygame.transform.flip(self.image,self.flipV,self.flipH)
+            if self.rotate == "left" or self.rotate == "right" or self.rotate == "to":
+                self.image = pygame.transform.rotate(self.image,self.rotate_angle * 180 / math.pi)
+                self.width,self.height = self.image.get_width(),self.image.get_height()
+                self.oldwidth,self.oldheight = self.width,self.height
+            self.game.screen.blit(self.image, [self.x - self.width/2,self.y - self.height/2])
 
         self.updateRect()
         self.displayCollisionBorder()
@@ -434,15 +437,6 @@ class Image(GameObject):
     def resizeBy(self,pct):
         factor = 1 + pct/100.0
         self.resizeTo(int(self.width * factor), int(self.height * factor))
-
-    def flip(self,direction):
-        v,h = False,False
-        if "V" in direction.upper() and "O" not in direction.upper():
-             v = True
-        if "H" in direction.upper() and "O" not in direction.upper():
-             h = True
-        self.image = self.original
-        self.image = pygame.transform.flip(self.image,v,h)
 
     def isOffScreen(self,side="all"):
         offscreen = False
