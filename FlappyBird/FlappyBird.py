@@ -11,7 +11,7 @@ from gamelib import *
 
 game = Game(800,600,"Flappy Bird")
 
-day = Image("images\\day.png",game)
+day = Image("images\day.png",game)
 day.resizeTo(game.width, game.height)
 night = Image("images\\night.png",game)
 night.resizeTo(game.width, game.height)
@@ -28,7 +28,7 @@ ring.moveTo(35,game.height - 50)
 
 ring2 = Animation("images\\ring2.png",64,game,64,64)
 ring2.x = game.width + 100
-ring2.setSpeed(2,90)
+ring2.setSpeed(4,90)
 
 pipeTop = Image("images\\pipe_top.png",game)
 pipeBottom = Image("images\\pipe_bot.png",game)
@@ -73,7 +73,7 @@ while not game.over:
     pipeTop.moveTo(ring2.x, ring2.y - 200)
 
     bar.draw()
-    ring.draw()
+    #ring.draw()
     
     if bird.collidedWith(pipeTop,"rectangle") or bird.collidedWith(pipeBottom,"rectangle") or bird.collidedWith(bar,"rectangle"):
         game.over = True
@@ -83,7 +83,7 @@ while not game.over:
     if keys.Pressed[K_SPACE] :
         bird.y -= 4
         bird.rotateTo(10)
-        wing.play()
+        wing.play(True)
     else:
         bird.rotateTo(-10)
         bird.y += 2
@@ -96,10 +96,10 @@ while not game.over:
     if ring2.x < -100:
         y = randint(200,300)
         ring2.moveTo(game.width + 100,y)
-        ring2.speed +=1
+        ring2.speed +=2
         ring2.visible = True
 
-    game.drawText(" x " + str(game.score),65,game.height - 85, Font(red,48,black,"Comic Sans MS"))
+    #game.drawText(" x " + str(game.score),65,game.height - 85, Font(red,48,black,"Comic Sans MS"))
     game.update(30)
 
 #Game Over
@@ -113,7 +113,7 @@ while not game.over:
     bar.draw()
     if keys.Pressed[K_ESCAPE]:
         game.over = True
-    game.drawText("Press [ECAPE] to end",bird.x - 180, game.height - 80, Font(red,36,black,"Comic Sans MS"))
+    game.drawText("Press [ESCAPE] to end",bird.x - 180, game.height - 80, Font(red,36,black,"Comic Sans MS"))
     game.update(30)
 game.over = False
 game.quit()

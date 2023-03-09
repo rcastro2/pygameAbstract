@@ -43,12 +43,12 @@ while not game.over:
 
     game.clearBackground(white)
     box.draw()
-   
+
     for index in range(len(shapes)):
         shapes[index].move()
     if keys.Down and 48 < keys.Down < 57:
         current = keys.Down - 49
-
+        
     if current != None and 0 <= current <= len(shapes_names)-1:
         v = "Visible" if shapes[current].visible else "Hidden"
         game.drawText("Shape " + str(current+1) + " ( " + v + " ): " + shapes_names[current],10,10,Font(red,24,black))

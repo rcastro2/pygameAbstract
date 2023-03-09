@@ -34,7 +34,8 @@ class Mouse(object):
 
 class KeyBoard(object):
 	def __init__(self):
-		self.Down, self.Up, self.Pressed = None, None, pygame.key.get_pressed()
+                self.Down, self.Up, self.Pressed = None, None, pygame.key.get_pressed()
+                self.crap = None
 
 class Joystick(object):
         def __init__(self):
@@ -87,7 +88,7 @@ class Sound(object):
     def setVolume(self,level):
         self.file.set_volume(level / 100)
         
-    def play(self,block=False,time=0):
+    def play(self,block=True,time=0):
         #time is measured in ms
         c = pygame.mixer.Channel(self.chan)
         if not c.get_busy() or not block:
@@ -217,14 +218,16 @@ class Game(object):
                      sys.exit(0)
                 
             if event.type == pygame.KEYDOWN:
+                keys.Up = None
                 keys.Down = event.key
-            else:
-                keys.Down = None
+            #else:
+            #    keys.Down = None
 
             if event.type == pygame.KEYUP:
+                keys.Down = None
                 keys.Up = event.key
-            else:
-                keys.Up = None
+            #else:
+            #    keys.Up = None
 
             pos = pygame.mouse.get_pos()
             mouse.x, mouse.y = pos
@@ -517,7 +520,8 @@ class Animation(Image):
         if self.visible:
             Image.setImage(self, self.images[self.f % len(self.images)])
             Image.draw(self)
-            self.ftick += 1
+            if self.playAnim:
+                self.ftick += 1
             if self.ftick % self.frate == 0 and self.playAnim:
                 self.f += 1
                 self.ftick = 0

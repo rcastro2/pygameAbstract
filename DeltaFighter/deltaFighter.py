@@ -71,7 +71,7 @@ def drawScreenText(text, x, y, rate = 10):
         
 #Game Program
 game = Game(800,600,"Delta Fighter")
-game.debug = False
+#game.debug = False
 bk = Animation("images\\field_5.png",5,game,1000,1000)
 game.setBackground(bk)
 
