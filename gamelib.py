@@ -1,4 +1,4 @@
-import pygame,math,sys
+import pygame,math,sys, copy
 from pygame.locals import *
 from math import *
 from random import randint
@@ -111,8 +111,8 @@ class Game(object):
     def clearBackground(self,color=(0,0,0)):
         self.screen.fill(color)
         
-    def setBackground(self,bkGraphics):
-        self.background = bkGraphics
+    def setBackground(self,bkGraphics,make_copy=False):
+        self.background = copy.copy(bkGraphics) if make_copy else bkGraphics
         self.backgroundXY = [[],[],[]]
         for r in range(3):
              for c in range(3):
