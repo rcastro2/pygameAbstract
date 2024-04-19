@@ -315,18 +315,14 @@ class GameObject(object):
             elif shape == "vertices":
                 for i1 in range(len(obj.points)):
                     p1 = obj.points[i1]
-                    #pygame.draw.circle(game.screen,red,(p1[0],p1[1]),5)
                     for i2 in range(len(self.points)):
                         p2 = self.points[i2]
-                        #pygame.draw.circle(game.screen,red,(p2[0],p2[1]),5)
                         if self.point_in_polygon(p2,obj.points):
                             return True
                 for i1 in range(len(self.points)):
                     p1 = self.points[i1]
-                    #pygame.draw.circle(game.screen,red,(p1[0],p1[1]),5)
                     for i2 in range(len(obj.points)):
                         p2 = obj.points[i2]
-                        #pygame.draw.circle(game.screen,red,(p2[0],p2[1]),5)
                         if self.point_in_polygon(p2,self.points):
                             return True
         return False
