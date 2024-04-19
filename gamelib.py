@@ -613,6 +613,13 @@ class Animation(Image):
 
     def resizeTo(self,w,h):
         self.width, self.height = w, h
+        self.size = int(math.sqrt(self.width**2 + self.height**2) / 2)
+        angle1 = math.pi - 2*math.atan(self.width/self.height)
+        angle2 = math.pi - 2*math.atan(self.height/self.width)
+        self.reference_angle = [angle1/2,angle2,angle1,angle2]
+        self.points = []
+        self.updatePoints(True)
+        
         for i in range(len(self.images)):
             self.images[i] = pygame.transform.scale(self.source[i],(int(self.width),int(self.height)))
             
