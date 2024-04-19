@@ -491,6 +491,12 @@ class Image(GameObject):
         self.image = self.original
         self.width,self.height = self.image.get_width(),self.image.get_height()
         self.oldwidth,self.oldheight = self.width,self.height
+        self.size = int(math.sqrt(self.width**2 + self.height**2) / 2)
+        angle1 = math.pi - 2*math.atan(self.width/self.height)
+        angle2 = math.pi - 2*math.atan(self.height/self.width)
+        self.reference_angle = [angle1/2,angle2,angle1,angle2]
+        self.points = []
+        self.updatePoints(True)
         
     def resizeBy(self,pct):
         factor = 1 + pct/100.0
