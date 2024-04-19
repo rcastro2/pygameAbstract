@@ -311,8 +311,59 @@ class GameObject(object):
                 if d < int((self.width/2+self.height/2)/2) + int((obj.width/2+obj.height/2)/2):
                     return True 
             elif shape == "rectangle" and self.rect.colliderect(obj.rect):
-                    return True              
+                    return True
+            elif shape == "vertices":
+                for i1 in range(len(obj.points)):
+                    p1 = obj.points[i1]
+                    #pygame.draw.circle(game.screen,red,(p1[0],p1[1]),5)
+                    for i2 in range(len(self.points)):
+                        p2 = self.points[i2]
+                        #pygame.draw.circle(game.screen,red,(p2[0],p2[1]),5)
+                        if self.point_in_polygon(p2,obj.points):
+                            return True
+                for i1 in range(len(self.points)):
+                    p1 = self.points[i1]
+                    #pygame.draw.circle(game.screen,red,(p1[0],p1[1]),5)
+                    for i2 in range(len(obj.points)):
+                        p2 = obj.points[i2]
+                        #pygame.draw.circle(game.screen,red,(p2[0],p2[1]),5)
+                        if self.point_in_polygon(p2,self.points):
+                            return True
         return False
+
+    def point_in_polygon(self,point, polygon):
+        #https://www.geeksforgeeks.org/how-to-check-if-a-given-point-lies-inside-a-polygon/
+        num_vertices = len(polygon)
+        x, y = point[0], point[1]
+        inside = False
+ 
+        # Store the first point in the polygon and initialize the second point
+        p1 = polygon[0]
+ 
+        # Loop through each edge in the polygon
+        for i in range(1, num_vertices + 1):
+            # Get the next point in the polygon
+            p2 = polygon[i % num_vertices]
+ 
+            # Check if the point is above the minimum y coordinate of the edge
+            if y > min(p1[1], p2[1]):
+                # Check if the point is below the maximum y coordinate of the edge
+                if y <= max(p1[1], p2[1]):
+                    # Check if the point is to the left of the maximum x coordinate of the edge
+                    if x <= max(p1[0], p2[0]):
+                        # Calculate the x-intersection of the line connecting the point to the edge
+                        x_intersection = (y - p1[1]) * (p2[0] - p1[0]) / (p2[1] - p1[1]) + p1[0]
+ 
+                        # Check if the point is on the same line as the edge or to the left of the x-intersection
+                        if p1[0] == p2[0] or x <= x_intersection:
+                            # Flip the inside flag
+                            inside = not inside
+ 
+            # Store the current point as the first point for the next iteration
+            p1 = p2
+ 
+        # Return the value of the inside flag
+        return inside
 
     def calculateSpeedDeltas(self):
         self.dx = self.speed * math.sin(self.angle - math.pi)
@@ -389,6 +440,8 @@ class GameObject(object):
             pygame.draw.circle(self.game.screen,red,(int(self.x),int(self.y)),int((self.width/2+self.height/2)/2),1)
         elif self.collisionBorder == "rectangle" or self.game.collisionBorder == "rectangle":
             pygame.draw.rect(self.game.screen,red,self.rect,1)
+        elif self.collisionBorder == "vertices" or self.game.collisionBorder == "vertices":
+            pygame.draw.polygon(self.game.screen,red,self.points,1)
 
 class Image(GameObject):
     def __init__(self,path,game,use_alpha=True):
@@ -407,6 +460,12 @@ class Image(GameObject):
         self.height, self.original_height,self.oldheight = self.image.get_height(), self.image.get_height(), self.image.get_height()
         self.original, self.src = self.image, self.image
         self.flipV,self.flipH, self.offsetX, self.offsetY = False,False,0,0
+        self.size = int(math.sqrt(self.width**2 + self.height**2) / 2)
+        angle1 = math.pi - 2*math.atan(self.width/self.height)
+        angle2 = math.pi - 2*math.atan(self.height/self.width)
+        self.reference_angle = [angle1/2,angle2,angle1,angle2]
+        self.points = []
+        self.updatePoints(True)
         self.updateRect()
         self.health = 100
         self.damage = 0
@@ -427,7 +486,7 @@ class Image(GameObject):
                 self.width,self.height = self.image.get_width(),self.image.get_height()
                 self.oldwidth,self.oldheight = self.width,self.height
             self.game.screen.blit(self.image, [self.x - self.width/2 + self.offsetX,self.y - self.height/2 + self.offsetY])
-
+        self.updatePoints()
         self.updateRect()
         self.displayCollisionBorder()
 
@@ -454,6 +513,20 @@ class Image(GameObject):
         elif side == "right":
                 offscreen = self.left > self.game.right	
         return offscreen
+
+    def updatePoints(self,empty=False):
+        xcoord, ycoord = [], []
+        theta = 0
+        for index in range(4):
+             theta += self.reference_angle[index]
+             x = self.x + self.size * math.sin(self.rotate_angle + theta + math.pi / 2)
+             y = self.y + self.size * math.cos(self.rotate_angle + theta + math.pi / 2)
+             xcoord.append(x)
+             ycoord.append(y)
+             if not empty:
+                  self.points[index] = (x,y)
+             else:
+                  self.points.append( (x,y) )
 
  
 class Animation(Image):
